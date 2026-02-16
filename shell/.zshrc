@@ -14,6 +14,21 @@ fi
 # ---------- Vi mode ----------
 bindkey -v
 
+# Cursor shape: bar in insert, block in normal
+function zle-keymap-select {
+    if [[ ${KEYMAP} == vicmd ]] || [[ $1 = 'block' ]]; then
+        echo -ne '\e[2 q'
+    elif [[ ${KEYMAP} == main ]] || [[ ${KEYMAP} == viins ]] || [[ $1 = 'beam' ]]; then
+        echo -ne '\e[6 q'
+    fi
+}
+zle -N zle-keymap-select
+
+function zle-line-init {
+    echo -ne '\e[6 q'
+}
+zle -N zle-line-init
+
 # ---------- Completions ----------
 autoload -Uz compinit
 compinit
