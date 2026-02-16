@@ -1,5 +1,6 @@
 {
   "env": {
     "EDITOR": "vim"
-  }
+  },
+  "skipDangerousModePermissionPrompt": true
 }
