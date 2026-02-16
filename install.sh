@@ -88,6 +88,17 @@ else
     echo "  Already installed"
 fi
 
+# ---------- Optional: Neovim (LazyVim) ----------
+echo ""
+echo "==> Neovim config (LazyVim)"
+read -rp "Install Neovim/LazyVim config? [y/N] " nvim_answer
+if [[ "$nvim_answer" =~ ^[Yy]$ ]]; then
+    mkdir -p "$HOME/.config"
+    link_dir "$DOTFILES/nvim" "$HOME/.config/nvim"
+else
+    echo "  Skipped (basic .vimrc still installed)"
+fi
+
 # ---------- Optional: Install utilities ----------
 install_optional() {
     echo ""

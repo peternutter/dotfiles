@@ -25,6 +25,7 @@ bash <(curl -sL https://raw.githubusercontent.com/peternutter/dotfiles/main/inst
 | **vim** | OSC 52 clipboard (yank works over SSH), relative line numbers, sane defaults |
 | **git** | Aliases, rebase on pull, auto setup remote |
 | **ssh** | Generates ed25519 key if missing |
+| **nvim** | LazyVim setup (optional, prompted during install) |
 | **claude** | Claude Code global instructions and settings |
 
 ## Secrets
