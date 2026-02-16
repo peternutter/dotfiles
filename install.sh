@@ -59,27 +59,13 @@ link_file "$DOTFILES/vim/.vimrc" "$HOME/.vimrc"
 # ---------- Git ----------
 echo "==> Git"
 link_file "$DOTFILES/git/.gitconfig" "$HOME/.gitconfig"
-# Prompt for name/email if not set
-if ! git config --global user.name &>/dev/null; then
-    read -rp "  Git user.name: " git_name
-    git config --global user.name "$git_name"
-fi
-if ! git config --global user.email &>/dev/null; then
-    read -rp "  Git user.email: " git_email
-    git config --global user.email "$git_email"
-fi
 
 # ---------- SSH ----------
 echo "==> SSH"
 mkdir -p "$HOME/.ssh/sockets"
 chmod 700 "$HOME/.ssh"
-if [ ! -f "$HOME/.ssh/config" ]; then
-    cp "$DOTFILES/ssh/config.example" "$HOME/.ssh/config"
-    chmod 600 "$HOME/.ssh/config"
-    echo "  Created ~/.ssh/config from template"
-else
-    echo "  ~/.ssh/config already exists, skipping (see ssh/config.example)"
-fi
+link_file "$DOTFILES/ssh/config" "$HOME/.ssh/config"
+chmod 600 "$HOME/.ssh/config"
 
 # ---------- Claude Code ----------
 echo "==> Claude Code"
@@ -136,6 +122,4 @@ echo "Done! Restart your shell or run: source ~/.zshrc"
 echo ""
 echo "Next steps:"
 echo "  1. Edit ~/.env with your API keys"
-echo "  2. Set git name/email if not done: git config --global user.name 'Your Name'"
-echo "  3. Customize ~/.ssh/config with your hosts"
-echo "  4. Put machine-specific shell config in ~/.zshrc.local or ~/.bashrc.local"
+echo "  2. Put machine-specific shell config in ~/.zshrc.local or ~/.bashrc.local"

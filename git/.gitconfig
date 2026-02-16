@@ -1,6 +1,8 @@
 # .gitconfig - Git configuration
-# Run after install: git config --global user.name "Your Name"
-#                    git config --global user.email "you@example.com"
+
+[user]
+	name = Peter N.
+	email = peternutter100@gmail.com
 
 [init]
 	defaultBranch = main

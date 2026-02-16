@@ -1,0 +1,85 @@
+# SSH config
+
+# Keep connections alive
+ServerAliveInterval 300
+ServerAliveCountMax 12
+
+# Reuse connections (faster subsequent SSH/SCP)
+Host *
+    ControlMaster auto
+    ControlPath ~/.ssh/sockets/%r@%h-%p
+    ControlPersist 600
+
+# ---------- Homelab ----------
+Host truenas
+    HostName ssh.peterstran.com
+    ProxyCommand cloudflared access ssh --hostname %h
+    User admin
+
+Host dev
+    HostName ubuntu.peterstran.com
+    ProxyCommand cloudflared access ssh --hostname %h
+    User dev
+
+Host claude-dev
+    HostName claude.peterstran.com
+    ProxyCommand cloudflared access ssh --hostname %h
+    User root
+
+# ---------- ETH / CSCS ----------
+Host euler privsec0 privsec1 jumphost
+    ForwardX11 yes
+    ForwardX11Trusted yes
+    User pnutter
+    IdentityFile ~/.ssh/id_rsa
+
+Host euler privsec0 privsec1
+    ProxyJump jumphost
+
+Host euler
+    HostName login.euler.ethz.ch
+
+Host privsec0
+    HostName privsec0.inf.ethz.ch
+
+Host privsec1
+    HostName privsec1.inf.ethz.ch
+
+Host jumphost
+    HostName jumphost1.inf.ethz.ch
+
+# CSCS
+Host ela
+    HostName ela.cscs.ch
+    User pnutter
+    IdentityFile ~/.ssh/cscs-key
+
+Host clariden
+    HostName clariden.alps.cscs.ch
+    ProxyJump ela
+    User pnutter
+    IdentityFile ~/.ssh/cscs-key
+    IdentitiesOnly yes
+
+Host bristen
+    HostName bristen.alps.cscs.ch
+    ProxyJump ela
+    User pnutter
+    IdentityFile ~/.ssh/cscs-key
+    IdentitiesOnly yes
+
+Host daint
+    HostName daint.alps.cscs.ch
+    ProxyJump ela
+    User pnutter
+    IdentityFile ~/.ssh/cscs-key
+    IdentitiesOnly yes
+
+# ---------- Other ----------
+Host gasl.gprendi.dev
+    HostName gasl.gprendi.dev
+    User peter
+
+Host helios.fjfi.cvut.cz
+    HostName helios.fjfi.cvut.cz
+    User nuttepet
