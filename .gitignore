@@ -1,0 +1,15 @@
+# Secrets - NEVER commit
+.env
+shell/.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+
+# Local overrides
+*.local

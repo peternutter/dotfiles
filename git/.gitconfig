@@ -1,0 +1,30 @@
+# .gitconfig - Git configuration
+# Run after install: git config --global user.name "Your Name"
+#                    git config --global user.email "you@example.com"
+
+[init]
+	defaultBranch = main
+
+[core]
+	editor = vim
+	autocrlf = input
+	pager = less -FRX
+
+[pull]
+	rebase = true
+
+[push]
+	autoSetupRemote = true
+
+[alias]
+	s = status
+	d = diff
+	l = log --oneline -20
+	lg = log --graph --oneline --decorate -20
+	co = checkout
+	br = branch
+	cm = commit
+	last = log -1 HEAD
+
+[color]
+	ui = auto
