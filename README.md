@@ -24,7 +24,7 @@ bash <(curl -sL https://raw.githubusercontent.com/peternutter/dotfiles/main/inst
 | **tmux** | C-Space prefix, vim navigation, mouse scroll, catppuccin, OSC 52 clipboard |
 | **vim** | OSC 52 clipboard (yank works over SSH), relative line numbers, sane defaults |
 | **git** | Aliases, rebase on pull, auto setup remote |
-| **ssh** | Connection reuse, keepalive template |
+| **ssh** | Generates ed25519 key if missing |
 | **claude** | Claude Code global instructions and settings |
 
 ## Secrets

@@ -64,8 +64,14 @@ link_file "$DOTFILES/git/.gitconfig" "$HOME/.gitconfig"
 echo "==> SSH"
 mkdir -p "$HOME/.ssh/sockets"
 chmod 700 "$HOME/.ssh"
-link_file "$DOTFILES/ssh/config" "$HOME/.ssh/config"
-chmod 600 "$HOME/.ssh/config"
+if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
+    ssh-keygen -t ed25519 -C "peternutter100@gmail.com" -f "$HOME/.ssh/id_ed25519" -N ""
+    echo "  Generated ~/.ssh/id_ed25519"
+    echo "  Public key:"
+    cat "$HOME/.ssh/id_ed25519.pub"
+else
+    echo "  SSH key already exists, skipping"
+fi
 
 # ---------- Claude Code ----------
 echo "==> Claude Code"
