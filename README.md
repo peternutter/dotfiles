@@ -9,9 +9,11 @@ git clone https://github.com/peternutter/dotfiles.git ~/.dotfiles
 ~/.dotfiles/install.sh
 ```
 
-Or one-liner for containers:
+With optional extras:
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/peternutter/dotfiles/main/install.sh)
+~/.dotfiles/install.sh --nvim       # include Neovim/LazyVim
+~/.dotfiles/install.sh --tools      # install CLI tools (bat, eza, fd, fzf, ripgrep, htop, uv)
+~/.dotfiles/install.sh --all        # everything
 ```
 
 ## What's Included
@@ -25,21 +27,20 @@ bash <(curl -sL https://raw.githubusercontent.com/peternutter/dotfiles/main/inst
 | **vim** | OSC 52 clipboard (yank works over SSH), relative line numbers, sane defaults |
 | **git** | Aliases, rebase on pull, auto setup remote |
 | **ssh** | Generates ed25519 key if missing |
-| **nvim** | LazyVim setup (optional, prompted during install) |
+| **nvim** | LazyVim setup (`--nvim` flag) |
 | **claude** | Claude Code global instructions and settings |
 
-## Secrets
+## How It Works
 
-API keys go in `~/.env` (gitignored, never committed). See `shell/.env.example` for the template.
+Configs are symlinked from `~/.dotfiles/` to your home directory. This means:
+
+- **To change something on all machines**: edit files in this repo, commit, and push. Every machine with the symlinks picks up changes on `git pull`.
+- **To change something on one machine only**: put it in `~/.zshrc.local` or `~/.bashrc.local`.
+- **API keys and secrets**: go in `~/.env` (never committed). See `shell/.env.example` for the template.
 
 ## Local Overrides
 
 Machine-specific config goes in:
-- `~/.zshrc.local`
-- `~/.bashrc.local`
-
-These are sourced at the end and override anything in the dotfiles.
-
-## Optional Tools
-
-The installer can optionally install: bat, eza, fd, fzf, ripgrep, htop, uv.
+- `~/.zshrc.local` — extra PATH entries, machine-specific exports
+- `~/.bashrc.local` — same for bash
+- `~/.env` — API keys and secrets (gitignored)

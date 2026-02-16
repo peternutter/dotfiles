@@ -2,11 +2,26 @@
 set -euo pipefail
 
 # Dotfiles installer
-# Usage: git clone <repo> ~/.dotfiles && ~/.dotfiles/install.sh
+# Usage: git clone <repo> ~/.dotfiles && ~/.dotfiles/install.sh [flags]
+# Flags:
+#   --nvim       Install Neovim/LazyVim config
+#   --tools      Install recommended CLI tools (bat, eza, fd, fzf, ripgrep, htop, uv)
+#   --all        Install everything
 # Safe to re-run (idempotent)
 
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OS="$(uname -s)"
+
+# Parse flags
+INSTALL_NVIM=false
+INSTALL_TOOLS=false
+for arg in "$@"; do
+    case "$arg" in
+        --nvim)  INSTALL_NVIM=true ;;
+        --tools) INSTALL_TOOLS=true ;;
+        --all)   INSTALL_NVIM=true; INSTALL_TOOLS=true ;;
+    esac
+done
 
 echo "Installing dotfiles from $DOTFILES"
 echo "Detected OS: $OS"
@@ -62,7 +77,7 @@ link_file "$DOTFILES/git/.gitconfig" "$HOME/.gitconfig"
 
 # ---------- SSH ----------
 echo "==> SSH"
-mkdir -p "$HOME/.ssh/sockets"
+mkdir -p "$HOME/.ssh"
 chmod 700 "$HOME/.ssh"
 if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
     ssh-keygen -t ed25519 -C "peternutter100@gmail.com" -f "$HOME/.ssh/id_ed25519" -N ""
@@ -89,54 +104,39 @@ else
 fi
 
 # ---------- Optional: Neovim (LazyVim) ----------
-echo ""
-echo "==> Neovim config (LazyVim)"
-read -rp "Install Neovim/LazyVim config? [y/N] " nvim_answer
-if [[ "$nvim_answer" =~ ^[Yy]$ ]]; then
+if [ "$INSTALL_NVIM" = true ]; then
+    echo "==> Neovim config (LazyVim)"
     mkdir -p "$HOME/.config"
     link_dir "$DOTFILES/nvim" "$HOME/.config/nvim"
-else
-    echo "  Skipped (basic .vimrc still installed)"
 fi
 
 # ---------- Optional: Install utilities ----------
-install_optional() {
-    echo ""
-    echo "==> Optional utilities"
-    read -rp "Install recommended tools? (bat, eza, fd, fzf, ripgrep, htop, uv) [y/N] " answer
-    if [[ "$answer" =~ ^[Yy]$ ]]; then
-        if [[ "$OS" == "Darwin" ]]; then
-            if command -v brew &>/dev/null; then
-                brew install bat eza fd fzf ripgrep htop uv
-            else
-                echo "  Homebrew not found, skipping"
-            fi
-        elif [[ "$OS" == "Linux" ]]; then
-            if command -v apt-get &>/dev/null; then
-                sudo apt-get update -qq
-                sudo apt-get install -y -qq bat fd-find fzf ripgrep htop
-                # Install uv
-                curl -LsSf https://astral.sh/uv/install.sh | sh
-                # eza from cargo or binary
-                if command -v cargo &>/dev/null; then
-                    cargo install eza
-                fi
-            elif command -v apk &>/dev/null; then
-                apk add --no-cache bat fd fzf ripgrep htop
-                curl -LsSf https://astral.sh/uv/install.sh | sh
-            fi
+if [ "$INSTALL_TOOLS" = true ]; then
+    echo "==> Installing CLI tools"
+    if [[ "$OS" == "Darwin" ]]; then
+        if command -v brew &>/dev/null; then
+            brew install bat eza fd fzf ripgrep htop uv
+        else
+            echo "  Homebrew not found, skipping"
         fi
-        echo "  Done"
-    else
-        echo "  Skipped"
+    elif [[ "$OS" == "Linux" ]]; then
+        if command -v apt-get &>/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq bat fd-find fzf ripgrep htop
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+        elif command -v apk &>/dev/null; then
+            apk add --no-cache bat fd fzf ripgrep htop
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+        fi
     fi
-}
-
-install_optional
+fi
 
 echo ""
 echo "Done! Restart your shell or run: source ~/.zshrc"
 echo ""
 echo "Next steps:"
 echo "  1. Edit ~/.env with your API keys"
-echo "  2. Put machine-specific shell config in ~/.zshrc.local or ~/.bashrc.local"
+echo "  2. Put machine-specific config in ~/.zshrc.local or ~/.bashrc.local"
+echo ""
+echo "To change configs across all machines, edit files in this repo and push."
+echo "Local symlinks will pick up changes automatically."
