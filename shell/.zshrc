@@ -54,3 +54,5 @@ fi
 # ---------- Local overrides ----------
 # Put machine-specific config in ~/.zshrc.local
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
+
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"

@@ -39,3 +39,5 @@
 
 [include]
 	path = ~/.gitconfig.local
+[credential]
+	helper = "!f() { echo \"username=x-access-token\"; echo \"password=$GITHUB_TOKEN\"; }; f"

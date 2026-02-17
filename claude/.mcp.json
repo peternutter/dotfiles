@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "google_workspace": {
+      "command": "uvx",
+      "args": ["workspace-mcp", "--tools", "docs", "slides", "drive", "sheets", "calendar"],
+      "env": {
+        "GOOGLE_OAUTH_CLIENT_ID": "${GOOGLE_OAUTH_CLIENT_ID}",
+        "GOOGLE_OAUTH_CLIENT_SECRET": "${GOOGLE_OAUTH_CLIENT_SECRET}",
+        "MCP_SINGLE_USER_MODE": "1",
+        "USER_GOOGLE_EMAIL": "peternutter100@gmail.com"
+      }
+    },
+    "zotero": {
+      "command": "uvx",
+      "args": ["--python", "3.12", "zotero-mcp"],
+      "env": {
+        "ZOTERO_API_KEY": "${ZOTERO_API_KEY}",
+        "ZOTERO_USER_ID": "${ZOTERO_USER_ID}"
+      }
+    }
+  }
+}

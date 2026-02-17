@@ -34,3 +34,5 @@ fi
 
 # ---------- Local overrides ----------
 [ -f "$HOME/.bashrc.local" ] && source "$HOME/.bashrc.local"
+
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
