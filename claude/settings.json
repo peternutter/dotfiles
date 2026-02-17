@@ -2,5 +2,31 @@
   "env": {
     "EDITOR": "vim"
   },
-  "skipDangerousModePermissionPrompt": true
+  "permissions": {
+    "defaultMode": "acceptEdits"
+  },
+  "model": "opus",
+  "skipDangerousModePermissionPrompt": true,
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "outputStyle": "custom",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "file=$(jq -r '.tool_input.file_path // empty') && [ -n \"$file\" ] && [[ \"$file\" == *.py ]] && uvx ruff check --fix --quiet \"$file\" 2>/dev/null; true"
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -93,6 +93,9 @@ echo "==> Claude Code"
 mkdir -p "$HOME/.claude"
 link_file "$DOTFILES/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 link_file "$DOTFILES/claude/settings.json" "$HOME/.claude/settings.json"
+link_file "$DOTFILES/claude/.mcp.json" "$HOME/.claude/.mcp.json"
+link_file "$DOTFILES/claude/statusline.sh" "$HOME/.claude/statusline.sh"
+link_dir "$DOTFILES/claude/output-styles" "$HOME/.claude/output-styles"
 
 # ---------- Oh-My-Zsh ----------
 echo "==> Oh-My-Zsh"
