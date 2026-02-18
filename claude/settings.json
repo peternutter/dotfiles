@@ -14,7 +14,7 @@
   "outputStyle": "custom",
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.sh"
+    "command": "bash ~/.claude/statusline.sh"
   },
   "hooks": {
     "PostToolUse": [
