@@ -93,7 +93,25 @@ echo "==> Claude Code"
 mkdir -p "$HOME/.claude"
 link_file "$DOTFILES/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 link_file "$DOTFILES/claude/settings.json" "$HOME/.claude/settings.json"
-link_file "$DOTFILES/claude/.mcp.json" "$HOME/.claude/.mcp.json"
+# Merge MCP servers into ~/.claude.json (Claude Code reads user MCPs from there)
+if command -v jq &>/dev/null; then
+    if [ ! -f "$HOME/.claude.json" ]; then
+        echo '{}' > "$HOME/.claude.json"
+    fi
+    for server in $(jq -r '.mcpServers | keys[]' "$DOTFILES/claude/.mcp.json"); do
+        if jq -e ".mcpServers.\"$server\"" "$HOME/.claude.json" >/dev/null 2>&1; then
+            echo "  Skipped MCP server '$server' (already configured)"
+        else
+            SERVER_CONFIG=$(jq ".mcpServers.\"$server\"" "$DOTFILES/claude/.mcp.json")
+            jq --arg name "$server" --argjson config "$SERVER_CONFIG" \
+                '.mcpServers[$name] = $config' "$HOME/.claude.json" > "$HOME/.claude.json.tmp" \
+                && mv -f "$HOME/.claude.json.tmp" "$HOME/.claude.json"
+            echo "  Added MCP server '$server'"
+        fi
+    done
+else
+    echo "  WARNING: jq not found, skipping MCP server config (install jq and re-run)"
+fi
 link_file "$DOTFILES/claude/statusline.sh" "$HOME/.claude/statusline.sh"
 link_dir "$DOTFILES/claude/output-styles" "$HOME/.claude/output-styles"
 
