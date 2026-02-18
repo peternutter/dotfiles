@@ -9,7 +9,7 @@ cost=$(echo "$data" | jq -r '.cost.total_cost_usd // 0' | xargs printf '$%.2f')
 
 # Git branch (cached for 5s to avoid slowdown)
 cache="/tmp/claude-statusline-git"
-if [ ! -f "$cache" ] || [ "$(( $(date +%s) - $(stat -f %m "$cache" 2>/dev/null || echo 0) ))" -gt 5 ]; then
+if [ ! -f "$cache" ] || [ "$(( $(date +%s) - $(stat -c %Y "$cache" 2>/dev/null || stat -f %m "$cache" 2>/dev/null || echo 0) ))" -gt 5 ]; then
     branch=$(git -C "$(echo "$data" | jq -r '.workspace.project_dir // "."')" branch --show-current 2>/dev/null || echo "")
     echo "$branch" > "$cache"
 else
