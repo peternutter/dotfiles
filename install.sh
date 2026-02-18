@@ -104,6 +104,10 @@ if command -v jq &>/dev/null; then
         else
             SERVER_CONFIG=$(jq ".mcpServers.\"$server\"" "$DOTFILES/claude/.mcp.json" \
                 | jq 'walk(if type == "string" and test("^\\$\\{.+\\}$") then (capture("\\$\\{(?<v>.+)\\}") | .v | $ENV[.]) // . else . end)')
+            # Resolve command to absolute path so MCP subprocesses find it
+            CMD=$(echo "$SERVER_CONFIG" | jq -r '.command')
+            RESOLVED_CMD=$(command -v "$CMD" 2>/dev/null || echo "$CMD")
+            SERVER_CONFIG=$(echo "$SERVER_CONFIG" | jq --arg cmd "$RESOLVED_CMD" '.command = $cmd')
             jq --arg name "$server" --argjson config "$SERVER_CONFIG" \
                 '.mcpServers[$name] = $config' "$HOME/.claude.json" > "$HOME/.claude.json.tmp" \
                 && mv -f "$HOME/.claude.json.tmp" "$HOME/.claude.json"
