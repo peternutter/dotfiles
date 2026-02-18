@@ -102,7 +102,8 @@ if command -v jq &>/dev/null; then
         if jq -e ".mcpServers.\"$server\"" "$HOME/.claude.json" >/dev/null 2>&1; then
             echo "  Skipped MCP server '$server' (already configured)"
         else
-            SERVER_CONFIG=$(jq ".mcpServers.\"$server\"" "$DOTFILES/claude/.mcp.json")
+            SERVER_CONFIG=$(jq ".mcpServers.\"$server\"" "$DOTFILES/claude/.mcp.json" \
+                | jq 'walk(if type == "string" and test("^\\$\\{.+\\}$") then (capture("\\$\\{(?<v>.+)\\}") | .v | $ENV[.]) // . else . end)')
             jq --arg name "$server" --argjson config "$SERVER_CONFIG" \
                 '.mcpServers[$name] = $config' "$HOME/.claude.json" > "$HOME/.claude.json.tmp" \
                 && mv -f "$HOME/.claude.json.tmp" "$HOME/.claude.json"
