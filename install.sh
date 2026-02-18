@@ -115,6 +115,7 @@ else
 fi
 link_file "$DOTFILES/claude/statusline.sh" "$HOME/.claude/statusline.sh"
 link_dir "$DOTFILES/claude/output-styles" "$HOME/.claude/output-styles"
+link_dir "$DOTFILES/claude/skills" "$HOME/.claude/skills"
 
 # ---------- Oh-My-Zsh ----------
 echo "==> Oh-My-Zsh"
