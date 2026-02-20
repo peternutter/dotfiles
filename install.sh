@@ -123,6 +123,32 @@ link_dir "$DOTFILES/claude/skills" "$HOME/.claude/skills"
 
 # ---------- Oh-My-Zsh ----------
 echo "==> Oh-My-Zsh"
+if ! command -v zsh &>/dev/null; then
+    echo "  zsh not found, installing..."
+    if [[ "$OS" == "Linux" ]]; then
+        if [ "$(id -u)" -eq 0 ]; then
+            apt-get update -qq && apt-get install -y -qq zsh
+        else
+            sudo apt-get update -qq && sudo apt-get install -y -qq zsh
+        fi
+    elif [[ "$OS" == "Darwin" ]] && command -v brew &>/dev/null; then
+        brew install zsh
+    else
+        echo "  WARNING: cannot install zsh automatically, install it manually"
+    fi
+fi
+if ! command -v tmux &>/dev/null; then
+    echo "  tmux not found, installing..."
+    if [[ "$OS" == "Linux" ]]; then
+        if [ "$(id -u)" -eq 0 ]; then
+            apt-get update -qq && apt-get install -y -qq tmux
+        else
+            sudo apt-get update -qq && sudo apt-get install -y -qq tmux
+        fi
+    elif [[ "$OS" == "Darwin" ]] && command -v brew &>/dev/null; then
+        brew install tmux
+    fi
+fi
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo "  Installing oh-my-zsh..."
     RUNZSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
@@ -147,12 +173,15 @@ if [ "$INSTALL_TOOLS" = true ]; then
             echo "  Homebrew not found, skipping"
         fi
     elif [[ "$OS" == "Linux" ]]; then
+        # Use sudo only if not root
+        SUDO=""
+        [ "$(id -u)" -ne 0 ] && SUDO="sudo"
         if command -v apt-get &>/dev/null; then
-            sudo apt-get update -qq
-            sudo apt-get install -y -qq bat fd-find fzf ripgrep htop
+            $SUDO apt-get update -qq
+            $SUDO apt-get install -y -qq bat fd-find fzf ripgrep htop jq
             curl -LsSf https://astral.sh/uv/install.sh | sh
         elif command -v apk &>/dev/null; then
-            apk add --no-cache bat fd fzf ripgrep htop
+            $SUDO apk add --no-cache bat fd fzf ripgrep htop jq
             curl -LsSf https://astral.sh/uv/install.sh | sh
         fi
     fi
