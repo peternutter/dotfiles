@@ -19,7 +19,7 @@ export UV_PYTHON_PREFERENCE="managed"
 
 # ---------- Aliases ----------
 if command -v opencode >/dev/null 2>&1; then
-    alias oc='opencode .'
+    alias oc='OPENCODE_CONFIG_CONTENT="{\"permission\":\"allow\"}" opencode .'
 fi
 alias ll='ls -la'
 alias la='ls -A'
