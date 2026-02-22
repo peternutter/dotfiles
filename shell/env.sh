@@ -18,9 +18,7 @@ export PATH="$HOME/.claude/bin:$PATH"
 export UV_PYTHON_PREFERENCE="managed"
 
 # ---------- Aliases ----------
-if command -v opencode >/dev/null 2>&1; then
-    alias oc='OPENCODE_CONFIG_CONTENT="{\"permission\":\"allow\"}" opencode .'
-fi
+# oc is defined as a function in .zshrc.local (container-specific)
 alias ll='ls -la'
 alias la='ls -A'
 alias l='ls -CF'
