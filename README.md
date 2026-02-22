@@ -28,7 +28,7 @@ With optional extras:
 | **git** | Aliases, rebase on pull, auto setup remote |
 | **ssh** | Generates ed25519 key if missing |
 | **nvim** | LazyVim setup (`--nvim` flag) |
-| **claude** | Claude Code global instructions and settings |
+| **claude** | Claude Code global instructions, settings, and MCP templates |
 
 ## How It Works
 
@@ -44,3 +44,14 @@ Machine-specific config goes in:
 - `~/.zshrc.local` — extra PATH entries, machine-specific exports
 - `~/.bashrc.local` — same for bash
 - `~/.env` — API keys and secrets (gitignored)
+
+## MCP Servers (Claude + OpenCode)
+
+The MCP server list lives in `dotfiles/claude/.mcp.json`. The dotfiles installer merges
+that list into both:
+
+- Claude Code: `~/.claude.json` (key: `mcpServers`)
+- OpenCode: `~/.config/opencode/opencode.json` (key: `mcp`)
+
+When adding a new MCP server, update `dotfiles/claude/.mcp.json` and re-run
+`dotfiles/install.sh` (or rebuild the claude-code container).

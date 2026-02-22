@@ -1,0 +1,17 @@
+OpenCode MCP sharing
+
+- Source of truth: dotfiles/claude/.mcp.json
+- install.sh merges this into both:
+  - Claude Code: ~/.claude.json (mcpServers)
+  - OpenCode: ~/.config/opencode/opencode.json (mcp)
+
+Adding a new MCP server:
+1) Edit dotfiles/claude/.mcp.json
+2) Re-run dotfiles/install.sh (or rebuild the claude-code container)
+
+Notes:
+- OpenCode uses a different schema:
+  - type: "local"
+  - command: ["uvx", "workspace-mcp", ...]
+  - environment: { ... }
+- Env vars in .mcp.json are expanded from the current shell when install.sh runs.

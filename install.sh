@@ -53,6 +53,21 @@ link_dir() {
     echo "  Linked $dst -> $src"
 }
 
+resolve_command() {
+    local cmd="$1"
+    local resolved
+    resolved=$(command -v "$cmd" 2>/dev/null || true)
+    if [ -n "$resolved" ]; then
+        echo "$resolved"
+        return
+    fi
+    if [ -x "$HOME/.local/bin/$cmd" ]; then
+        echo "$HOME/.local/bin/$cmd"
+        return
+    fi
+    echo "$cmd"
+}
+
 # ---------- Shell ----------
 echo "==> Shell configs"
 link_file "$DOTFILES/shell/.zshrc" "$HOME/.zshrc"
@@ -90,6 +105,7 @@ fi
 
 # ---------- Claude Code ----------
 echo "==> Claude Code"
+MCP_SOURCE="$DOTFILES/claude/.mcp.json"
 mkdir -p "$HOME/.claude"
 link_file "$DOTFILES/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 link_file "$DOTFILES/claude/settings.json" "$HOME/.claude/settings.json"
@@ -98,20 +114,56 @@ if command -v jq &>/dev/null; then
     if [ ! -f "$HOME/.claude.json" ]; then
         echo '{}' > "$HOME/.claude.json"
     fi
-    for server in $(jq -r '.mcpServers | keys[]' "$DOTFILES/claude/.mcp.json"); do
+    for server in $(jq -r '.mcpServers | keys[]' "$MCP_SOURCE"); do
         if jq -e ".mcpServers.\"$server\"" "$HOME/.claude.json" >/dev/null 2>&1; then
             echo "  Skipped MCP server '$server' (already configured)"
         else
-            SERVER_CONFIG=$(jq ".mcpServers.\"$server\"" "$DOTFILES/claude/.mcp.json" \
+            SERVER_CONFIG=$(jq ".mcpServers.\"$server\"" "$MCP_SOURCE" \
                 | jq 'walk(if type == "string" and test("^\\$\\{.+\\}$") then (capture("\\$\\{(?<v>.+)\\}") | .v | $ENV[.]) // . else . end)')
             # Resolve command to absolute path so MCP subprocesses find it
             CMD=$(echo "$SERVER_CONFIG" | jq -r '.command')
-            RESOLVED_CMD=$(command -v "$CMD" 2>/dev/null || echo "$CMD")
+            RESOLVED_CMD=$(resolve_command "$CMD")
             SERVER_CONFIG=$(echo "$SERVER_CONFIG" | jq --arg cmd "$RESOLVED_CMD" '.command = $cmd')
             jq --arg name "$server" --argjson config "$SERVER_CONFIG" \
                 '.mcpServers[$name] = $config' "$HOME/.claude.json" > "$HOME/.claude.json.tmp" \
                 && mv -f "$HOME/.claude.json.tmp" "$HOME/.claude.json"
             echo "  Added MCP server '$server'"
+        fi
+    done
+
+    echo "==> OpenCode MCP"
+    OPENCODE_CONFIG_DIR="$HOME/.config/opencode"
+    OPENCODE_CONFIG="$OPENCODE_CONFIG_DIR/opencode.json"
+    mkdir -p "$OPENCODE_CONFIG_DIR"
+    if [ ! -f "$OPENCODE_CONFIG" ]; then
+        echo '{}' > "$OPENCODE_CONFIG"
+    fi
+    for server in $(jq -r '.mcpServers | keys[]' "$MCP_SOURCE"); do
+        SERVER_CONFIG=$(jq ".mcpServers.\"$server\"" "$MCP_SOURCE" \
+            | jq 'walk(if type == "string" and test("^\\$\\{.+\\}$") then (capture("\\$\\{(?<v>.+)\\}") | .v | $ENV[.]) // . else . end)')
+        CMD=$(echo "$SERVER_CONFIG" | jq -r '.command')
+        RESOLVED_CMD=$(resolve_command "$CMD")
+        OPENCODE_SERVER=$(echo "$SERVER_CONFIG" | jq --arg cmd "$RESOLVED_CMD" \
+            '{
+                type: "local",
+                command: ([$cmd] + (.args // [])),
+                environment: (.env // .environment // {})
+            }')
+        if jq -e ".mcp.\"$server\"" "$OPENCODE_CONFIG" >/dev/null 2>&1; then
+            CURRENT_CMD=$(jq -r ".mcp.\"$server\".command[0] // empty" "$OPENCODE_CONFIG")
+            if [ -n "$CURRENT_CMD" ] && [ "$CURRENT_CMD" != "$RESOLVED_CMD" ]; then
+                jq --arg name "$server" --argjson config "$OPENCODE_SERVER" \
+                    '.mcp[$name] = $config' "$OPENCODE_CONFIG" > "$OPENCODE_CONFIG.tmp" \
+                    && mv -f "$OPENCODE_CONFIG.tmp" "$OPENCODE_CONFIG"
+                echo "  Updated MCP server '$server' for OpenCode"
+            else
+                echo "  Skipped MCP server '$server' (already configured for OpenCode)"
+            fi
+        else
+            jq --arg name "$server" --argjson config "$OPENCODE_SERVER" \
+                '.mcp[$name] = $config' "$OPENCODE_CONFIG" > "$OPENCODE_CONFIG.tmp" \
+                && mv -f "$OPENCODE_CONFIG.tmp" "$OPENCODE_CONFIG"
+            echo "  Added MCP server '$server' to OpenCode"
         fi
     done
 else
