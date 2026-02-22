@@ -18,6 +18,9 @@ export PATH="$HOME/.claude/bin:$PATH"
 export UV_PYTHON_PREFERENCE="managed"
 
 # ---------- Aliases ----------
+if command -v opencode >/dev/null 2>&1; then
+    alias oc='opencode .'
+fi
 alias ll='ls -la'
 alias la='ls -A'
 alias l='ls -CF'
