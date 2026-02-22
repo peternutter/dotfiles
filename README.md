@@ -55,3 +55,9 @@ that list into both:
 
 When adding a new MCP server, update `dotfiles/claude/.mcp.json` and re-run
 `dotfiles/install.sh` (or rebuild the claude-code container).
+
+## OpenCode Vim
+
+OpenCode does not support Vim/vi keybinding mode in its TUI input editor.
+`EDITOR`/`VISUAL` are set to `vim` for external editor usage, but in-app
+keybindings remain OpenCode defaults.
