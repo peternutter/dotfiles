@@ -40,10 +40,9 @@ setopt SHARE_HISTORY
 setopt HIST_IGNORE_DUPS
 
 # ---------- Shared env ----------
-DOTFILES_DIR="$(dirname "$(readlink -f "${(%):-%x}" 2>/dev/null || echo "$HOME/.dotfiles/shell/.zshrc")")"
+# :A resolves symlinks (like readlink -f), :h gets dirname — pure zsh, works on macOS
+DOTFILES_DIR="${${(%):-%x}:A:h}"
 [ -f "$DOTFILES_DIR/env.sh" ] && source "$DOTFILES_DIR/env.sh"
-# Fallback: source from home if symlinked
-[ -f "$HOME/.dotfiles/shell/env.sh" ] && source "$HOME/.dotfiles/shell/env.sh"
 
 # ---------- Platform-specific ----------
 if [[ "$(uname)" == "Darwin" ]]; then

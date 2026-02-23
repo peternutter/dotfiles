@@ -22,10 +22,18 @@ shopt -s globstar 2>/dev/null
 PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 
 # ---------- Shared env ----------
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
+# Resolve symlinks to find the real script directory
+_bashrc_path="${BASH_SOURCE[0]}"
+if [ -L "$_bashrc_path" ]; then
+    if command -v realpath &>/dev/null; then
+        _bashrc_path="$(realpath "$_bashrc_path")"
+    elif command -v greadlink &>/dev/null; then
+        _bashrc_path="$(greadlink -f "$_bashrc_path")"
+    fi
+fi
+DOTFILES_DIR="$(cd "$(dirname "$_bashrc_path")" 2>/dev/null && pwd)"
+unset _bashrc_path
 [ -f "$DOTFILES_DIR/env.sh" ] && source "$DOTFILES_DIR/env.sh"
-# Fallback: source from home if symlinked
-[ -f "$HOME/.dotfiles/shell/env.sh" ] && source "$HOME/.dotfiles/shell/env.sh"
 
 # ---------- Platform-specific ----------
 if [[ "$(uname)" == "Darwin" ]]; then

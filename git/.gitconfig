@@ -10,7 +10,20 @@
 [core]
 	editor = vim
 	autocrlf = input
-	pager = less -FRX
+	# Use delta if installed, fall back to less
+	pager = delta --dark 2>/dev/null || less -FRX
+
+[delta]
+	navigate = true
+	line-numbers = true
+	side-by-side = false
+	syntax-theme = ansi
+
+[interactive]
+	diffFilter = delta --color-only 2>/dev/null
+
+[merge]
+	conflictstyle = zdiff3
 
 [pull]
 	rebase = true
