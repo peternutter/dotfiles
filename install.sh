@@ -89,6 +89,13 @@ link_file "$DOTFILES/vim/.vimrc" "$HOME/.vimrc"
 # ---------- Git ----------
 echo "==> Git"
 link_file "$DOTFILES/git/.gitconfig" "$HOME/.gitconfig"
+# zdiff3 requires git >= 2.35; downgrade to diff3 on older systems
+GIT_MAJOR=$(git --version | grep -oP '\d+' | head -1)
+GIT_MINOR=$(git --version | grep -oP '\d+' | sed -n '2p')
+if [ "${GIT_MAJOR:-0}" -lt 2 ] || { [ "${GIT_MAJOR:-0}" -eq 2 ] && [ "${GIT_MINOR:-0}" -lt 35 ]; }; then
+    git config --global merge.conflictstyle diff3
+    echo "  git $(git --version | grep -oP '[\d.]+' | head -1): zdiff3 unsupported, using diff3"
+fi
 
 # ---------- SSH ----------
 echo "==> SSH"
