@@ -23,7 +23,7 @@
 	diffFilter = delta --color-only 2>/dev/null
 
 [merge]
-	conflictstyle = zdiff3
+	conflictstyle = diff3
 
 [pull]
 	rebase = true
