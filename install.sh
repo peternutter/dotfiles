@@ -90,11 +90,12 @@ link_file "$DOTFILES/vim/.vimrc" "$HOME/.vimrc"
 echo "==> Git"
 link_file "$DOTFILES/git/.gitconfig" "$HOME/.gitconfig"
 # zdiff3 requires git >= 2.35; downgrade to diff3 on older systems
-GIT_MAJOR=$(git --version | grep -oP '\d+' | head -1)
-GIT_MINOR=$(git --version | grep -oP '\d+' | sed -n '2p')
+GIT_VER=$(git --version | sed 's/[^0-9.]*//' | cut -d' ' -f1)
+GIT_MAJOR=$(echo "$GIT_VER" | cut -d. -f1)
+GIT_MINOR=$(echo "$GIT_VER" | cut -d. -f2)
 if [ "${GIT_MAJOR:-0}" -lt 2 ] || { [ "${GIT_MAJOR:-0}" -eq 2 ] && [ "${GIT_MINOR:-0}" -lt 35 ]; }; then
     git config --global merge.conflictstyle diff3
-    echo "  git $(git --version | grep -oP '[\d.]+' | head -1): zdiff3 unsupported, using diff3"
+    echo "  git $GIT_VER: zdiff3 unsupported, using diff3"
 fi
 
 # ---------- SSH ----------
@@ -137,6 +138,13 @@ if command -v jq &>/dev/null; then
             echo "  Added MCP server '$server'"
         fi
     done
+
+    # Enable remote control WebSocket server on every session
+    if ! jq -e '.remoteControlAtStartup' "$HOME/.claude.json" >/dev/null 2>&1; then
+        jq '.remoteControlAtStartup = true' "$HOME/.claude.json" > "$HOME/.claude.json.tmp" \
+            && mv -f "$HOME/.claude.json.tmp" "$HOME/.claude.json"
+        echo "  Enabled remoteControlAtStartup"
+    fi
 
     echo "==> OpenCode MCP"
     OPENCODE_CONFIG_DIR="$HOME/.config/opencode"
