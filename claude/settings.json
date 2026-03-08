@@ -2,20 +2,14 @@
   "env": {
     "EDITOR": "vim"
   },
-  "permissions": {
-    "defaultMode": "acceptEdits"
-  },
-  "model": "opus",
-  "skipDangerousModePermissionPrompt": true,
   "attribution": {
     "commit": "",
     "pr": ""
   },
-  "outputStyle": "custom",
-  "statusLine": {
-    "type": "command",
-    "command": "bash ~/.claude/statusline.sh"
+  "permissions": {
+    "defaultMode": "acceptEdits"
   },
+  "model": "opus",
   "hooks": {
     "PostToolUse": [
       {
@@ -28,5 +22,12 @@
         ]
       }
     ]
-  }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline.sh"
+  },
+  "outputStyle": "custom",
+  "skipDangerousModePermissionPrompt": true,
+  "effortLevel": "high"
 }
