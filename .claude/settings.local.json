@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(chmod:*)",
+      "Bash(/Users/peter/.claude/statusline.sh)",
+      "Bash(uvx ruff:*)",
+      "Bash(echo:*)",
+      "Bash(jq:*)",
+      "mcp__zotero__zotero_search_items"
+    ]
+  },
+  "outputStyle": "Explanatory"
+}
