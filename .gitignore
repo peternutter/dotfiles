@@ -1,3 +1,4 @@
+.claude/
 # Secrets - NEVER commit
 .env
 shell/.env
@@ -13,4 +14,3 @@ Thumbs.db
 
 # Local overrides
 *.local
-.claude/.container-initialized
