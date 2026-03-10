@@ -29,5 +29,10 @@
   },
   "outputStyle": "custom",
   "skipDangerousModePermissionPrompt": true,
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": false,
+    "context7@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true
+  }
 }
