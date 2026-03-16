@@ -9,7 +9,6 @@
   "permissions": {
     "defaultMode": "acceptEdits"
   },
-  "model": "opus",
   "hooks": {
     "PostToolUse": [
       {
@@ -18,6 +17,10 @@
           {
             "type": "command",
             "command": "file=$(jq -r '.tool_input.file_path // empty') && [ -n \"$file\" ] && [[ \"$file\" == *.py ]] && uvx ruff check --fix --quiet \"$file\" 2>/dev/null; true"
+          },
+          {
+            "type": "command",
+            "command": "file=$(jq -r '.tool_input.file_path // empty'); [ -n \"$file\" ] && [[ \"$file\" == *.py ]] && { python3 -m py_compile \"$file\" || exit 2; }; exit 0"
           }
         ]
       }
@@ -27,12 +30,13 @@
     "type": "command",
     "command": "bash ~/.claude/statusline.sh"
   },
-  "outputStyle": "custom",
-  "skipDangerousModePermissionPrompt": true,
-  "effortLevel": "high",
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": false,
     "context7@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true
-  }
+  },
+  "vim": true,
+  "outputStyle": "custom",
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true
 }
