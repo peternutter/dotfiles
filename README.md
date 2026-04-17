@@ -45,16 +45,36 @@ Machine-specific config goes in:
 - `~/.bashrc.local` — same for bash
 - `~/.env` — API keys and secrets (gitignored)
 
-## MCP Servers (Claude + OpenCode)
+## MCP Servers (Claude + OpenCode + Codex)
 
 The MCP server list lives in `dotfiles/claude/.mcp.json`. The dotfiles installer merges
-that list into both:
+that list into:
 
 - Claude Code: `~/.claude.json` (key: `mcpServers`)
 - OpenCode: `~/.config/opencode/opencode.json` (key: `mcp`)
+- Codex: `~/.codex/config.toml` (tables: `[mcp_servers.<name>]`)
 
 When adding a new MCP server, update `dotfiles/claude/.mcp.json` and re-run
 `dotfiles/install.sh` (or rebuild the claude-code container).
+
+## Global Instructions (Claude + Codex + OpenCode)
+
+Global instructions live in `dotfiles/claude/CLAUDE.md` and are shared into:
+
+- Claude Code: `~/.claude/CLAUDE.md` (symlink)
+- Codex: `~/.codex/AGENTS.md` (symlink)
+- OpenCode: reads `~/.claude/CLAUDE.md` natively via its Claude Code
+  compatibility fallback — no extra config needed
+
+## Skills (Claude + Codex + OpenCode)
+
+Skills live in `dotfiles/claude/skills/` and are shared into:
+
+- Claude Code: `~/.claude/skills` (symlink)
+- Codex: `~/.codex/skills` (symlink) — Codex uses the same `SKILL.md` +
+  YAML frontmatter convention, invoked with `$<skill-name>`
+- OpenCode: reads `~/.claude/skills/*/SKILL.md` natively via its Claude
+  Code compatibility fallback — no extra config needed
 
 ## OpenCode Vim
 

@@ -117,6 +117,17 @@ MCP_SOURCE="$DOTFILES/claude/.mcp.json"
 mkdir -p "$HOME/.claude"
 link_file "$DOTFILES/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 link_file "$DOTFILES/claude/settings.json" "$HOME/.claude/settings.json"
+
+echo "==> Codex"
+mkdir -p "$HOME/.codex"
+link_file "$DOTFILES/claude/CLAUDE.md" "$HOME/.codex/AGENTS.md"
+# Codex ships bundled skills in ~/.codex/skills/.system/ and ~/.codex/skills/codex-primary-runtime/,
+# so we link each of our skills as a sibling rather than replacing the whole directory.
+mkdir -p "$HOME/.codex/skills"
+for skill_dir in "$DOTFILES/claude/skills"/*; do
+    [ -d "$skill_dir" ] || continue
+    link_file "$skill_dir" "$HOME/.codex/skills/$(basename "$skill_dir")"
+done
 # Merge MCP servers into ~/.claude.json (Claude Code reads user MCPs from there)
 if command -v jq &>/dev/null; then
     if [ ! -f "$HOME/.claude.json" ]; then
@@ -153,6 +164,10 @@ if command -v jq &>/dev/null; then
     if [ ! -f "$OPENCODE_CONFIG" ]; then
         echo '{}' > "$OPENCODE_CONFIG"
     fi
+
+    # Global instructions: OpenCode reads ~/.claude/CLAUDE.md natively via its
+    # Claude Code compatibility fallback, so no opencode.json wiring is needed.
+
     for server in $(jq -r '.mcpServers | keys[]' "$MCP_SOURCE"); do
         SERVER_CONFIG=$(jq ".mcpServers.\"$server\"" "$MCP_SOURCE" \
             | jq 'walk(if type == "string" and test("^\\$\\{.+\\}$") then (capture("\\$\\{(?<v>.+)\\}") | .v | $ENV[.]) // . else . end)')
@@ -181,6 +196,125 @@ if command -v jq &>/dev/null; then
             echo "  Added MCP server '$server' to OpenCode"
         fi
     done
+
+    echo "==> Codex MCP"
+    CODEX_CONFIG_DIR="$HOME/.codex"
+    CODEX_CONFIG="$CODEX_CONFIG_DIR/config.toml"
+    mkdir -p "$CODEX_CONFIG_DIR"
+    if [ ! -f "$CODEX_CONFIG" ]; then
+        touch "$CODEX_CONFIG"
+    fi
+
+    # Build a JSON payload of the desired Codex mcp_servers entries.
+    CODEX_MCP_JSON=$(jq -c '.mcpServers' "$MCP_SOURCE" \
+        | jq 'walk(if type == "string" and test("^\\$\\{.+\\}$") then (capture("\\$\\{(?<v>.+)\\}") | .v | $ENV[.]) // . else . end)' \
+        | jq -c 'to_entries
+            | map({
+                name: .key,
+                command: (.value.command // ""),
+                args: (.value.args // []),
+                env: (.value.env // .value.environment // {})
+            })')
+
+    if ! command -v python3 >/dev/null 2>&1; then
+        echo "  WARNING: python3 not found; cannot update $CODEX_CONFIG"
+    else
+        python3 - "$CODEX_CONFIG" "$CODEX_MCP_JSON" <<'PY'
+import json
+import re
+import shutil
+import os
+import sys
+
+config_path = sys.argv[1]
+servers = json.loads(sys.argv[2])
+
+server_names = {s["name"] for s in servers}
+
+def resolve_command(cmd: str) -> str:
+    if not cmd:
+        return cmd
+    resolved = shutil.which(cmd)
+    if resolved:
+        return resolved
+    local = os.path.expanduser(f"~/.local/bin/{cmd}")
+    if os.path.isfile(local) and os.access(local, os.X_OK):
+        return local
+    return cmd
+
+header_re = re.compile(r'^\[(?P<table>[^\]]+)\]\s*$')
+
+with open(config_path, 'r', encoding='utf-8') as f:
+    lines = f.readlines()
+
+out = []
+skip = False
+skip_managed = False
+for line in lines:
+    stripped = line.strip()
+
+    if stripped == '# --- dotfiles managed: MCP servers (do not edit by hand) ---':
+        skip_managed = True
+        continue
+    if stripped == '# --- end dotfiles managed MCP servers ---':
+        skip_managed = False
+        continue
+    if skip_managed:
+        continue
+
+    m = header_re.match(stripped)
+    if m:
+        table = m.group('table')
+        if table.startswith('mcp_servers.'):
+            rest = table[len('mcp_servers.'):]
+            name = rest.split('.', 1)[0]
+            skip = name in server_names
+        else:
+            skip = False
+
+    if not skip:
+        out.append(line)
+
+def toml_quote(s: str) -> str:
+    return '"' + s.replace('\\', '\\\\').replace('"', '\\"') + '"'
+
+def toml_array(items):
+    return '[' + ', '.join(toml_quote(x) for x in items) + ']'
+
+block = []
+block.append('\n# --- dotfiles managed: MCP servers (do not edit by hand) ---\n')
+
+placeholder_re = re.compile(r'^\$\{.+\}$')
+for s in servers:
+    name = s['name']
+    command = resolve_command(s.get('command') or '')
+    args = s.get('args') or []
+    env = s.get('env') or {}
+
+    # Resolve empty/invalid entries defensively.
+    if not name or not command:
+        continue
+
+    block.append(f"[mcp_servers.{name}]\n")
+    block.append(f"command = {toml_quote(command)}\n")
+    block.append(f"args = {toml_array(args)}\n")
+
+    env_items = [(k, v) for k, v in env.items() if isinstance(k, str) and isinstance(v, str) and v and not placeholder_re.match(v)]
+    if env_items:
+        block.append(f"\n[mcp_servers.{name}.env]\n")
+        for k, v in sorted(env_items):
+            block.append(f"{k} = {toml_quote(v)}\n")
+
+    block.append("\n")
+
+block.append('# --- end dotfiles managed MCP servers ---\n')
+
+with open(config_path, 'w', encoding='utf-8') as f:
+    f.writelines(out)
+    f.writelines(block)
+PY
+        echo "  Synced MCP servers into $CODEX_CONFIG"
+    fi
 else
     echo "  WARNING: jq not found, skipping MCP server config (install jq and re-run)"
 fi

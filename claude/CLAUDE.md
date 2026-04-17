@@ -7,5 +7,4 @@
 - Always check your environment before running platform-specific commands. Do NOT assume container vs host. Use `uname`, `hostname`, or check for Docker markers first.
 
 # Zotero
-- MCP tools: `zotero_search_items`, `zotero_item_metadata`, `zotero_item_fulltext`
-- For annotations use `/zotero-annotations <query>` (MCP doesn't expose them)
+- Use the `/zotero` skill for all Zotero operations (search, metadata, fulltext, annotations) — it hits the REST API directly with `ZOTERO_API_KEY` + `ZOTERO_LIBRARY_ID`.
