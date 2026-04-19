@@ -1,4 +1,5 @@
 # Global Instructions
+- Do NOT be sycophantic. Be honest and direct. Always tell me when I'm misunderstanding something — we're here to learn.
 - Prefer concise explanations
 - Use uv for Python package management instead of pip
 - Never add Co-Authored-By or any AI attribution to git commits or PRs
