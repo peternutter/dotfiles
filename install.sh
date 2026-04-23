@@ -68,6 +68,60 @@ resolve_command() {
     echo "$cmd"
 }
 
+load_user_env() {
+    if [ -f "$HOME/.env" ]; then
+        set -a
+        # shellcheck source=/dev/null
+        . "$HOME/.env"
+        set +a
+    fi
+}
+
+build_mcp_servers_json() {
+    python3 - "$MCP_SOURCE" <<'PY'
+import json
+import os
+import re
+import sys
+
+placeholder_re = re.compile(r'^\$\{(?P<name>.+)\}$')
+
+with open(sys.argv[1], 'r', encoding='utf-8') as f:
+    root = json.load(f)
+
+servers = []
+for name, cfg in (root.get('mcpServers') or {}).items():
+    env = cfg.get('env') or cfg.get('environment') or {}
+    resolved_env = {}
+    missing = []
+
+    for key, value in env.items():
+        if not isinstance(key, str) or not isinstance(value, str):
+            continue
+
+        match = placeholder_re.fullmatch(value)
+        if match:
+            var_name = match.group('name')
+            resolved = os.environ.get(var_name, '')
+            if resolved:
+                resolved_env[key] = resolved
+            else:
+                missing.append({'key': key, 'var': var_name})
+        elif value:
+            resolved_env[key] = value
+
+    servers.append({
+        'name': name,
+        'command': cfg.get('command', ''),
+        'args': cfg.get('args') or [],
+        'env': resolved_env,
+        'missing': missing,
+    })
+
+print(json.dumps(servers))
+PY
+}
+
 # ---------- Shell ----------
 echo "==> Shell configs"
 link_file "$DOTFILES/shell/.zshrc" "$HOME/.zshrc"
@@ -77,6 +131,8 @@ if [ ! -f "$HOME/.env" ]; then
     cp "$DOTFILES/shell/.env.example" "$HOME/.env"
     echo "  Created ~/.env from template (edit with your API keys)"
 fi
+
+load_user_env
 
 # ---------- Tmux ----------
 echo "==> Tmux"
@@ -130,95 +186,117 @@ for skill_dir in "$DOTFILES/claude/skills"/*; do
 done
 # Merge MCP servers into ~/.claude.json (Claude Code reads user MCPs from there)
 if command -v jq &>/dev/null; then
-    if [ ! -f "$HOME/.claude.json" ]; then
-        echo '{}' > "$HOME/.claude.json"
-    fi
-    for server in $(jq -r '.mcpServers | keys[]' "$MCP_SOURCE"); do
-        if jq -e ".mcpServers.\"$server\"" "$HOME/.claude.json" >/dev/null 2>&1; then
-            echo "  Skipped MCP server '$server' (already configured)"
-        else
-            SERVER_CONFIG=$(jq ".mcpServers.\"$server\"" "$MCP_SOURCE" \
-                | jq 'walk(if type == "string" and test("^\\$\\{.+\\}$") then (capture("\\$\\{(?<v>.+)\\}") | .v | $ENV[.]) // . else . end)')
-            # Resolve command to absolute path so MCP subprocesses find it
+    if ! command -v python3 >/dev/null 2>&1; then
+        echo "  WARNING: python3 not found, skipping MCP server config (install python3 and re-run)"
+    else
+        MCP_SERVERS_JSON=$(build_mcp_servers_json)
+        MISSING_MCP_ENV=$(echo "$MCP_SERVERS_JSON" | jq -r '
+            .[]
+            | select((.missing | length) > 0)
+            | "  WARNING: skipping MCP server \(.name) because these env vars are unset: \(.missing | map(.var) | unique | join(", "))"
+        ')
+        if [ -n "$MISSING_MCP_ENV" ]; then
+            echo "$MISSING_MCP_ENV"
+            echo "  Set them in ~/.env and re-run ~/.dotfiles/install.sh"
+        fi
+
+        if [ ! -f "$HOME/.claude.json" ]; then
+            echo '{}' > "$HOME/.claude.json"
+        fi
+        while IFS= read -r SERVER_CONFIG; do
+            server=$(echo "$SERVER_CONFIG" | jq -r '.name')
+            # Resolve command to absolute path so MCP subprocesses find it.
             CMD=$(echo "$SERVER_CONFIG" | jq -r '.command')
             RESOLVED_CMD=$(resolve_command "$CMD")
-            SERVER_CONFIG=$(echo "$SERVER_CONFIG" | jq --arg cmd "$RESOLVED_CMD" '.command = $cmd')
-            jq --arg name "$server" --argjson config "$SERVER_CONFIG" \
-                '.mcpServers[$name] = $config' "$HOME/.claude.json" > "$HOME/.claude.json.tmp" \
+            SERVER_CONFIG=$(echo "$SERVER_CONFIG" | jq --arg cmd "$RESOLVED_CMD" '
+                {
+                    command: $cmd,
+                    args: (.args // []),
+                    env: (.env // {})
+                }
+            ')
+            DESIRED_SERVER_CONFIG=$(echo "$SERVER_CONFIG" | jq -S -c '.')
+            CURRENT_SERVER_CONFIG=$(jq -S -c ".mcpServers.\"$server\" // empty" "$HOME/.claude.json")
+            if [ -n "$CURRENT_SERVER_CONFIG" ] && [ "$CURRENT_SERVER_CONFIG" = "$DESIRED_SERVER_CONFIG" ]; then
+                echo "  Skipped MCP server '$server' (already configured)"
+            else
+                jq --arg name "$server" --argjson config "$SERVER_CONFIG" \
+                    '.mcpServers[$name] = $config' "$HOME/.claude.json" > "$HOME/.claude.json.tmp" \
+                    && mv -f "$HOME/.claude.json.tmp" "$HOME/.claude.json"
+                if [ -n "$CURRENT_SERVER_CONFIG" ]; then
+                    echo "  Updated MCP server '$server'"
+                else
+                    echo "  Added MCP server '$server'"
+                fi
+            fi
+        done < <(echo "$MCP_SERVERS_JSON" | jq -c '.[] | select((.missing | length) == 0)')
+
+        # Enable remote control WebSocket server on every session
+        if ! jq -e '.remoteControlAtStartup' "$HOME/.claude.json" >/dev/null 2>&1; then
+            jq '.remoteControlAtStartup = true' "$HOME/.claude.json" > "$HOME/.claude.json.tmp" \
                 && mv -f "$HOME/.claude.json.tmp" "$HOME/.claude.json"
-            echo "  Added MCP server '$server'"
+            echo "  Enabled remoteControlAtStartup"
         fi
-    done
 
-    # Enable remote control WebSocket server on every session
-    if ! jq -e '.remoteControlAtStartup' "$HOME/.claude.json" >/dev/null 2>&1; then
-        jq '.remoteControlAtStartup = true' "$HOME/.claude.json" > "$HOME/.claude.json.tmp" \
-            && mv -f "$HOME/.claude.json.tmp" "$HOME/.claude.json"
-        echo "  Enabled remoteControlAtStartup"
-    fi
+        echo "==> OpenCode MCP"
+        OPENCODE_CONFIG_DIR="$HOME/.config/opencode"
+        OPENCODE_CONFIG="$OPENCODE_CONFIG_DIR/opencode.json"
+        mkdir -p "$OPENCODE_CONFIG_DIR"
+        if [ ! -f "$OPENCODE_CONFIG" ]; then
+            echo '{}' > "$OPENCODE_CONFIG"
+        fi
 
-    echo "==> OpenCode MCP"
-    OPENCODE_CONFIG_DIR="$HOME/.config/opencode"
-    OPENCODE_CONFIG="$OPENCODE_CONFIG_DIR/opencode.json"
-    mkdir -p "$OPENCODE_CONFIG_DIR"
-    if [ ! -f "$OPENCODE_CONFIG" ]; then
-        echo '{}' > "$OPENCODE_CONFIG"
-    fi
+        # Global instructions: OpenCode reads ~/.claude/CLAUDE.md natively via its
+        # Claude Code compatibility fallback, so no opencode.json wiring is needed.
 
-    # Global instructions: OpenCode reads ~/.claude/CLAUDE.md natively via its
-    # Claude Code compatibility fallback, so no opencode.json wiring is needed.
-
-    for server in $(jq -r '.mcpServers | keys[]' "$MCP_SOURCE"); do
-        SERVER_CONFIG=$(jq ".mcpServers.\"$server\"" "$MCP_SOURCE" \
-            | jq 'walk(if type == "string" and test("^\\$\\{.+\\}$") then (capture("\\$\\{(?<v>.+)\\}") | .v | $ENV[.]) // . else . end)')
-        CMD=$(echo "$SERVER_CONFIG" | jq -r '.command')
-        RESOLVED_CMD=$(resolve_command "$CMD")
-        OPENCODE_SERVER=$(echo "$SERVER_CONFIG" | jq --arg cmd "$RESOLVED_CMD" \
-            '{
-                type: "local",
-                command: ([$cmd] + (.args // [])),
-                environment: (.env // .environment // {})
-            }')
-        if jq -e ".mcp.\"$server\"" "$OPENCODE_CONFIG" >/dev/null 2>&1; then
-            CURRENT_CMD=$(jq -r ".mcp.\"$server\".command[0] // empty" "$OPENCODE_CONFIG")
-            if [ -n "$CURRENT_CMD" ] && [ "$CURRENT_CMD" != "$RESOLVED_CMD" ]; then
+        while IFS= read -r SERVER_CONFIG; do
+            server=$(echo "$SERVER_CONFIG" | jq -r '.name')
+            CMD=$(echo "$SERVER_CONFIG" | jq -r '.command')
+            RESOLVED_CMD=$(resolve_command "$CMD")
+            OPENCODE_SERVER=$(echo "$SERVER_CONFIG" | jq --arg cmd "$RESOLVED_CMD" \
+                '{
+                    type: "local",
+                    command: ([$cmd] + (.args // [])),
+                    environment: (.env // {})
+                }')
+            DESIRED_OPENCODE_SERVER=$(echo "$OPENCODE_SERVER" | jq -S -c '.')
+            CURRENT_OPENCODE_SERVER=$(jq -S -c ".mcp.\"$server\" // empty" "$OPENCODE_CONFIG")
+            if [ -n "$CURRENT_OPENCODE_SERVER" ] && [ "$CURRENT_OPENCODE_SERVER" = "$DESIRED_OPENCODE_SERVER" ]; then
+                echo "  Skipped MCP server '$server' (already configured for OpenCode)"
+            else
                 jq --arg name "$server" --argjson config "$OPENCODE_SERVER" \
                     '.mcp[$name] = $config' "$OPENCODE_CONFIG" > "$OPENCODE_CONFIG.tmp" \
                     && mv -f "$OPENCODE_CONFIG.tmp" "$OPENCODE_CONFIG"
-                echo "  Updated MCP server '$server' for OpenCode"
-            else
-                echo "  Skipped MCP server '$server' (already configured for OpenCode)"
+                if [ -n "$CURRENT_OPENCODE_SERVER" ]; then
+                    echo "  Updated MCP server '$server' for OpenCode"
+                else
+                    echo "  Added MCP server '$server' to OpenCode"
+                fi
             fi
-        else
-            jq --arg name "$server" --argjson config "$OPENCODE_SERVER" \
-                '.mcp[$name] = $config' "$OPENCODE_CONFIG" > "$OPENCODE_CONFIG.tmp" \
-                && mv -f "$OPENCODE_CONFIG.tmp" "$OPENCODE_CONFIG"
-            echo "  Added MCP server '$server' to OpenCode"
+        done < <(echo "$MCP_SERVERS_JSON" | jq -c '.[] | select((.missing | length) == 0)')
+
+        echo "==> Codex MCP"
+        CODEX_CONFIG_DIR="$HOME/.codex"
+        CODEX_CONFIG="$CODEX_CONFIG_DIR/config.toml"
+        mkdir -p "$CODEX_CONFIG_DIR"
+        if [ ! -f "$CODEX_CONFIG" ]; then
+            touch "$CODEX_CONFIG"
         fi
-    done
 
-    echo "==> Codex MCP"
-    CODEX_CONFIG_DIR="$HOME/.codex"
-    CODEX_CONFIG="$CODEX_CONFIG_DIR/config.toml"
-    mkdir -p "$CODEX_CONFIG_DIR"
-    if [ ! -f "$CODEX_CONFIG" ]; then
-        touch "$CODEX_CONFIG"
-    fi
+        # Build a JSON payload of the desired Codex mcp_servers entries.
+        CODEX_MCP_JSON=$(echo "$MCP_SERVERS_JSON" | jq -c '
+            [
+                .[]
+                | select((.missing | length) == 0)
+                | {
+                    name: .name,
+                    command: .command,
+                    args: .args,
+                    env: .env
+                }
+            ]
+        ')
 
-    # Build a JSON payload of the desired Codex mcp_servers entries.
-    CODEX_MCP_JSON=$(jq -c '.mcpServers' "$MCP_SOURCE" \
-        | jq 'walk(if type == "string" and test("^\\$\\{.+\\}$") then (capture("\\$\\{(?<v>.+)\\}") | .v | $ENV[.]) // . else . end)' \
-        | jq -c 'to_entries
-            | map({
-                name: .key,
-                command: (.value.command // ""),
-                args: (.value.args // []),
-                env: (.value.env // .value.environment // {})
-            })')
-
-    if ! command -v python3 >/dev/null 2>&1; then
-        echo "  WARNING: python3 not found; cannot update $CODEX_CONFIG"
-    else
         python3 - "$CODEX_CONFIG" "$CODEX_MCP_JSON" <<'PY'
 import json
 import re
@@ -284,7 +362,6 @@ def toml_array(items):
 block = []
 block.append('\n# --- dotfiles managed: MCP servers (do not edit by hand) ---\n')
 
-placeholder_re = re.compile(r'^\$\{.+\}$')
 for s in servers:
     name = s['name']
     command = resolve_command(s.get('command') or '')
@@ -299,7 +376,7 @@ for s in servers:
     block.append(f"command = {toml_quote(command)}\n")
     block.append(f"args = {toml_array(args)}\n")
 
-    env_items = [(k, v) for k, v in env.items() if isinstance(k, str) and isinstance(v, str) and v and not placeholder_re.match(v)]
+    env_items = [(k, v) for k, v in env.items() if isinstance(k, str) and isinstance(v, str) and v]
     if env_items:
         block.append(f"\n[mcp_servers.{name}.env]\n")
         for k, v in sorted(env_items):

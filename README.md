@@ -57,6 +57,10 @@ that list into:
 When adding a new MCP server, update `dotfiles/claude/.mcp.json` and re-run
 `dotfiles/install.sh` (or rebuild the claude-code container).
 
+MCP env vars are resolved when `dotfiles/install.sh` runs. If you change
+`~/.env`, re-run `dotfiles/install.sh`, then restart Codex so the MCP
+processes pick up the new environment.
+
 ## Global Instructions (Claude + Codex + OpenCode)
 
 Global instructions live in `dotfiles/claude/CLAUDE.md` and are shared into:
