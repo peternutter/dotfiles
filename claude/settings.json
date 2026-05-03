@@ -9,6 +9,7 @@
   "permissions": {
     "defaultMode": "acceptEdits"
   },
+  "model": "opus",
   "hooks": {
     "PostToolUse": [
       {
@@ -35,9 +36,9 @@
     "context7@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true
   },
-  "vim": true,
   "outputStyle": "custom",
-  "effortLevel": "high",
+  "effortLevel": "medium",
   "skipDangerousModePermissionPrompt": true,
-  "model": "opus"
+  "vim": true,
+  "remoteControlAtStartup": true
 }
