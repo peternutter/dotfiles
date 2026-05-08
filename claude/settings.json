@@ -9,7 +9,6 @@
   "permissions": {
     "defaultMode": "acceptEdits"
   },
-  "model": "opus",
   "hooks": {
     "PostToolUse": [
       {
@@ -39,6 +38,7 @@
   "outputStyle": "custom",
   "effortLevel": "medium",
   "skipDangerousModePermissionPrompt": true,
-  "vim": true,
-  "remoteControlAtStartup": true
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true,
+  "vim": true
 }

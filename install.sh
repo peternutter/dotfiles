@@ -77,6 +77,52 @@ load_user_env() {
     fi
 }
 
+install_tmux_if_missing() {
+    if command -v tmux &>/dev/null; then
+        return
+    fi
+
+    echo "  tmux not found, installing..."
+    if [[ "$OS" == "Linux" ]]; then
+        if [ "$(id -u)" -eq 0 ]; then
+            apt-get update -qq && apt-get install -y -qq tmux
+        else
+            sudo apt-get update -qq && sudo apt-get install -y -qq tmux
+        fi
+    elif [[ "$OS" == "Darwin" ]] && command -v brew &>/dev/null; then
+        brew install tmux
+    else
+        echo "  WARNING: cannot install tmux automatically, install it manually"
+    fi
+}
+
+install_tmux_plugins() {
+    if ! command -v tmux &>/dev/null; then
+        echo "  WARNING: tmux not found, skipping tmux plugin install"
+        return
+    fi
+    if ! command -v git &>/dev/null; then
+        echo "  WARNING: git not found, skipping tmux plugin install"
+        return
+    fi
+
+    mkdir -p "$HOME/.tmux/plugins"
+    if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
+        echo "  Installing TPM..."
+        if ! git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"; then
+            echo "  WARNING: failed to install TPM, skipping tmux plugins"
+            return
+        fi
+    else
+        echo "  TPM already installed"
+    fi
+
+    echo "  Installing tmux plugins..."
+    if ! "$HOME/.tmux/plugins/tpm/bin/install_plugins"; then
+        echo "  WARNING: tmux plugin install failed"
+    fi
+}
+
 build_mcp_servers_json() {
     python3 - "$MCP_SOURCE" <<'PY'
 import json
@@ -137,6 +183,8 @@ load_user_env
 # ---------- Tmux ----------
 echo "==> Tmux"
 link_file "$DOTFILES/tmux/.tmux.conf" "$HOME/.tmux.conf"
+install_tmux_if_missing
+install_tmux_plugins
 
 # ---------- Vim ----------
 echo "==> Vim"
@@ -413,18 +461,6 @@ if ! command -v zsh &>/dev/null; then
         brew install zsh
     else
         echo "  WARNING: cannot install zsh automatically, install it manually"
-    fi
-fi
-if ! command -v tmux &>/dev/null; then
-    echo "  tmux not found, installing..."
-    if [[ "$OS" == "Linux" ]]; then
-        if [ "$(id -u)" -eq 0 ]; then
-            apt-get update -qq && apt-get install -y -qq tmux
-        else
-            sudo apt-get update -qq && sudo apt-get install -y -qq tmux
-        fi
-    elif [[ "$OS" == "Darwin" ]] && command -v brew &>/dev/null; then
-        brew install tmux
     fi
 fi
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
