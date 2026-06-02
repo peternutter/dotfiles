@@ -55,3 +55,4 @@ fi
 [ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
 
 [ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
+export PATH="$HOME/.local/bin:$PATH"

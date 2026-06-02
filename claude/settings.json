@@ -7,7 +7,7 @@
     "pr": ""
   },
   "permissions": {
-    "defaultMode": "acceptEdits"
+    "defaultMode": "auto"
   },
   "hooks": {
     "PostToolUse": [
@@ -40,5 +40,7 @@
   "skipDangerousModePermissionPrompt": true,
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
-  "vim": true
+  "skipAutoPermissionPrompt": true,
+  "vim": true,
+  "model": "claude-opus-4-8"
 }
