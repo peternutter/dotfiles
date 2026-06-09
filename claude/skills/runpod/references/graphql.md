@@ -1,10 +1,17 @@
 # Runpod GraphQL
 
-Use GraphQL when REST or `runpodctl` does not expose the information cleanly, especially:
+Use GraphQL only when REST or `runpodctl` does not expose the information cleanly. From some local hosts, Runpod GraphQL can fail with Cloudflare `1010` while REST and `runpodctl` still work; do not block on GraphQL in that case.
 
-- GPU availability and GPU type metadata.
+Good GraphQL use cases:
+
 - Nested runtime metrics such as GPU utilization and container memory.
 - Spot/interruption-oriented legacy pod mutations.
+
+For live datacenter GPU stock, prefer:
+
+```bash
+python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env datacenter-availability --datacenter US-CA-2
+```
 
 Endpoint:
 

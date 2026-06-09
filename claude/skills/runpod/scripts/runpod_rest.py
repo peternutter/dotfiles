@@ -10,7 +10,11 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import platform
+import stat
+import subprocess
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -98,6 +102,32 @@ def rest(method: str, path: str, body: Any | None = None) -> tuple[int, Any]:
     if not path.startswith("/"):
         path = "/" + path
     return request_json(method, REST_BASE + path, body)
+
+
+def runpodctl_url() -> str:
+    system = platform.system().lower()
+    machine = platform.machine().lower()
+    if system == "darwin" and machine in {"arm64", "aarch64"}:
+        suffix = "darwin-arm64"
+    elif system == "darwin":
+        suffix = "darwin-amd64"
+    elif system == "linux" and machine in {"arm64", "aarch64"}:
+        suffix = "linux-arm64"
+    elif system == "linux":
+        suffix = "linux-amd64"
+    else:
+        raise SystemExit(f"Unsupported platform for runpodctl auto-download: {system}/{machine}")
+    return f"https://github.com/runpod/runpodctl/releases/latest/download/runpodctl-{suffix}"
+
+
+def ensure_runpodctl(path: str) -> str:
+    target = Path(path).expanduser()
+    if target.exists():
+        return str(target)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    urllib.request.urlretrieve(runpodctl_url(), target)
+    target.chmod(target.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+    return str(target)
 
 
 def graphql(query: str, variables: dict[str, Any] | None = None) -> tuple[int, Any]:
@@ -269,6 +299,165 @@ def cmd_cheap_gpus(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_datacenter_availability(args: argparse.Namespace) -> int:
+    tool = ensure_runpodctl(args.runpodctl)
+    env = os.environ.copy()
+    env.setdefault("HOME", "/tmp/runpodctl-home")
+    proc = subprocess.run(
+        [tool, "datacenter", "list"],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        env=env,
+    )
+    rows = json.loads(proc.stdout)
+
+    dc_filter = {item.upper() for item in args.datacenter or []}
+    gpu_filters = [item.lower() for item in args.gpu or []]
+    filtered: list[dict[str, Any]] = []
+    for dc in rows:
+        if dc_filter and str(dc.get("id", "")).upper() not in dc_filter:
+            continue
+        hits = []
+        for gpu in dc.get("gpuAvailability") or []:
+            haystack = f"{gpu.get('displayName', '')} {gpu.get('gpuId', '')}".lower()
+            if gpu_filters and not any(term in haystack for term in gpu_filters):
+                continue
+            hits.append(gpu)
+        if gpu_filters and not hits:
+            continue
+        filtered.append({**dc, "gpuAvailability": hits if gpu_filters else dc.get("gpuAvailability", [])})
+
+    if args.json:
+        print_json(filtered)
+        return 0
+
+    for dc in filtered:
+        print(f"{dc.get('id')} ({dc.get('location', 'unknown')})")
+        for gpu in dc.get("gpuAvailability") or []:
+            status = gpu.get("stockStatus") or "-"
+            print(f"  {status:6} {gpu.get('displayName')} [{gpu.get('gpuId')}]")
+    return 0
+
+
+def bootstrap_start_cmd(repo: str, script_path: str) -> list[str]:
+    api_url = f"https://api.github.com/repos/{repo}/contents/{script_path}"
+    raw_url = f"https://raw.githubusercontent.com/{repo}/main/{script_path}"
+    script = f"""set -e
+export DEBIAN_FRONTEND=noninteractive NONINTERACTIVE=1
+mkdir -p /workspace /run/sshd /root/.ssh
+if command -v apt-get >/dev/null 2>&1; then
+  apt-get update -qq || true
+  apt-get install -y -qq ca-certificates curl openssh-server >/dev/null || true
+fi
+if [ -n "${{PUBLIC_KEY:-}}" ]; then
+  printf '%s\\n' "$PUBLIC_KEY" > /root/.ssh/authorized_keys
+  chmod 700 /root/.ssh
+  chmod 600 /root/.ssh/authorized_keys
+fi
+/usr/sbin/sshd || true
+if [ -n "${{GITHUB_TOKEN:-}}" ]; then
+  curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github.v3.raw" \\
+    {api_url} -o /workspace/pod_bootstrap.sh || true
+fi
+if [ ! -s /workspace/pod_bootstrap.sh ]; then
+  curl -fsSL {raw_url} -o /workspace/pod_bootstrap.sh
+fi
+bash /workspace/pod_bootstrap.sh pod 2>&1 | tee /workspace/bootstrap.log
+sleep infinity
+"""
+    return ["bash", "-lc", script]
+
+
+def read_public_key(path: str) -> str:
+    key_path = Path(path).expanduser()
+    if not key_path.exists():
+        return ""
+    return key_path.read_text().strip()
+
+
+def github_token_from_gh() -> str:
+    try:
+        return subprocess.check_output(["gh", "auth", "token"], text=True, timeout=15).strip()
+    except Exception:
+        return ""
+
+
+def cmd_create_cpu_pod(args: argparse.Namespace) -> int:
+    payload: dict[str, Any] = {
+        "name": args.name,
+        "computeType": "CPU",
+        "cpuFlavorIds": args.cpu_flavor,
+        "cpuFlavorPriority": args.cpu_flavor_priority,
+        "vcpuCount": args.vcpu_count,
+        "cloudType": args.cloud_type,
+        "dataCenterIds": args.datacenter,
+        "dataCenterPriority": args.datacenter_priority,
+        "imageName": args.image,
+        "containerDiskInGb": args.container_disk_gb,
+        "volumeMountPath": args.volume_mount_path,
+        "ports": args.port,
+        "env": {},
+        "dockerStartCmd": bootstrap_start_cmd(args.repo, args.script_path),
+    }
+    if args.network_volume_id:
+        payload["networkVolumeId"] = args.network_volume_id
+    else:
+        payload["volumeInGb"] = args.volume_gb
+
+    if not args.no_ssh_key:
+        public_key = read_public_key(args.public_key_file)
+        if public_key:
+            payload["env"]["PUBLIC_KEY"] = public_key
+
+    token = ""
+    if args.github_token_from_gh:
+        token = github_token_from_gh()
+    if not token:
+        token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN") or ""
+    if token and not args.no_github_token:
+        payload["env"]["GITHUB_TOKEN"] = token
+
+    if args.dry_run:
+        print_json({"path": "/pods", "payload": payload})
+        return 0
+
+    require_yes(args)
+    status, body = rest("POST", "/pods", payload)
+    print_json({"status": status, "payload": body})
+    return 0 if 200 <= status < 300 else 2
+
+
+def ssh_target(payload: dict[str, Any], internal_port: str = "22") -> dict[str, Any]:
+    mappings = payload.get("portMappings") or {}
+    public_port = mappings.get(internal_port) or mappings.get(int(internal_port)) if isinstance(mappings, dict) else None
+    return {
+        "publicIp": payload.get("publicIp"),
+        "publicPort": public_port,
+        "ssh": f"ssh -i ~/.ssh/id_ed25519 -p {public_port} root@{payload.get('publicIp')}"
+        if payload.get("publicIp") and public_port else None,
+    }
+
+
+def cmd_wait_pod(args: argparse.Namespace) -> int:
+    deadline = time.monotonic() + args.timeout
+    last: Any = None
+    while True:
+        status, payload = rest("GET", f"/pods/{args.pod_id}")
+        last = payload
+        if 200 <= status < 300 and isinstance(payload, dict):
+            target = ssh_target(payload, args.internal_port)
+            ready = bool(target.get("publicIp") and target.get("publicPort"))
+            if ready:
+                print_json({"status": status, "ready": True, "pod": payload, "target": target})
+                return 0
+        if time.monotonic() >= deadline:
+            print_json({"status": status, "ready": False, "pod": last})
+            return 2
+        time.sleep(args.interval)
+
+
 def require_yes(args: argparse.Namespace) -> None:
     if not getattr(args, "yes", False):
         raise SystemExit("Refusing mutation without --yes. Confirm the target and cost first.")
@@ -327,9 +516,23 @@ def build_parser() -> argparse.ArgumentParser:
     cheap_gpus.add_argument("--include-spot", action="store_true")
     cheap_gpus.set_defaults(func=cmd_cheap_gpus)
 
+    availability = sub.add_parser("datacenter-availability", help="Live datacenter GPU stock via runpodctl")
+    availability.add_argument("--runpodctl", default="/tmp/runpodctl")
+    availability.add_argument("--datacenter", "-d", action="append", help="Filter to datacenter ID")
+    availability.add_argument("--gpu", "-g", action="append", help="Case-insensitive GPU name/id substring")
+    availability.add_argument("--json", action="store_true")
+    availability.set_defaults(func=cmd_datacenter_availability)
+
     get_pod = sub.add_parser("get-pod", help="GET /pods/{pod_id}")
     get_pod.add_argument("pod_id")
     get_pod.set_defaults(func=lambda args: cmd_get(argparse.Namespace(path=f"/pods/{args.pod_id}")))
+
+    wait_pod = sub.add_parser("wait-pod", help="Poll a pod until public IP and SSH port mapping exist")
+    wait_pod.add_argument("pod_id")
+    wait_pod.add_argument("--internal-port", default="22")
+    wait_pod.add_argument("--interval", type=float, default=10)
+    wait_pod.add_argument("--timeout", type=float, default=300)
+    wait_pod.set_defaults(func=cmd_wait_pod)
 
     openapi = sub.add_parser("openapi", help="GET /openapi.json")
     openapi.add_argument("--output")
@@ -350,6 +553,30 @@ def build_parser() -> argparse.ArgumentParser:
     create_pod.add_argument("payload_json")
     create_pod.add_argument("--yes", action="store_true")
     create_pod.set_defaults(path="/pods", func=cmd_create)
+
+    create_cpu = sub.add_parser("create-cpu-pod", help="Create a CPU pod with bootstrap-friendly defaults")
+    create_cpu.add_argument("--name", default="runpod-cpu-bootstrap")
+    create_cpu.add_argument("--datacenter", action="append", required=True, help="Datacenter ID, e.g. US-CA-2")
+    create_cpu.add_argument("--datacenter-priority", choices=("availability", "custom"), default="custom")
+    create_cpu.add_argument("--cpu-flavor", action="append", default=["cpu3g"], help="CPU flavor ID, e.g. cpu3g")
+    create_cpu.add_argument("--cpu-flavor-priority", choices=("availability", "custom"), default="custom")
+    create_cpu.add_argument("--vcpu-count", type=int, default=2)
+    create_cpu.add_argument("--cloud-type", choices=("SECURE", "COMMUNITY"), default="SECURE")
+    create_cpu.add_argument("--image", default="runpod/base:0.4.0-cuda11.8.0")
+    create_cpu.add_argument("--container-disk-gb", type=int, default=20)
+    create_cpu.add_argument("--network-volume-id", help="Attach an existing network volume")
+    create_cpu.add_argument("--volume-gb", type=int, default=20, help="Local pod volume size if no network volume is attached")
+    create_cpu.add_argument("--volume-mount-path", default="/workspace")
+    create_cpu.add_argument("--port", action="append", default=["22/tcp", "8888/http"])
+    create_cpu.add_argument("--public-key-file", default="~/.ssh/id_ed25519.pub")
+    create_cpu.add_argument("--no-ssh-key", action="store_true")
+    create_cpu.add_argument("--github-token-from-gh", action="store_true")
+    create_cpu.add_argument("--no-github-token", action="store_true")
+    create_cpu.add_argument("--repo", default="peternutter/mats_project")
+    create_cpu.add_argument("--script-path", default="code/scripts/pod_bootstrap.sh")
+    create_cpu.add_argument("--dry-run", action="store_true")
+    create_cpu.add_argument("--yes", action="store_true")
+    create_cpu.set_defaults(func=cmd_create_cpu_pod)
 
     create_vol = sub.add_parser("create-volume", help="POST /networkvolumes with payload JSON")
     create_vol.add_argument("payload_json")

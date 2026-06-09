@@ -21,6 +21,8 @@ Use this skill for Runpod infrastructure work. Prefer current official docs and 
 3. The bundled helper at `/Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py`, for direct REST/GraphQL inspection.
 4. Official docs via `https://docs.runpod.io/llms.txt` and `https://rest.runpod.io/v1/openapi.json`.
 
+Do not default to GraphQL for inventory from a local machine. It may return Cloudflare `1010` even when REST and `runpodctl` work.
+
 ## Local Helper
 
 The bundled helper is stdlib-only and defaults to read-only commands:
@@ -32,6 +34,8 @@ python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-
 python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env list-templates
 python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env gpu-types
 python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env cheap-gpus --min-vram 16
+python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env datacenter-availability --datacenter US-CA-2
+python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env wait-pod POD_ID
 ```
 
 Mutating commands require `--yes` and must not be used without explicit user approval:
@@ -41,6 +45,7 @@ python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-
 python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env start-pod POD_ID --yes
 python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env delete-pod POD_ID --yes
 python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env create-pod payload.json --yes
+python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env create-cpu-pod --datacenter US-CA-2 --network-volume-id VOLUME_ID --github-token-from-gh --yes
 python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env create-volume payload.json --yes
 ```
 
@@ -53,6 +58,7 @@ python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-
 ## Practical Defaults
 
 - Use REST at `https://rest.runpod.io/v1` for CRUD: Pods, templates, network volumes, billing.
-- Use GraphQL at `https://api.runpod.io/graphql` only when REST does not expose the needed view cleanly, mainly GPU availability/pricing, nested runtime metrics, and some spot/resume flows.
+- Use `datacenter-availability`/`runpodctl datacenter list` for live per-datacenter GPU stock. It does not expose CPU stock.
+- Use GraphQL at `https://api.runpod.io/graphql` only when REST/runpodctl do not expose the needed view cleanly. If it returns Cloudflare `1010`, fall back immediately.
 - Use network volumes for data that must survive pod termination. Pod-local volume survives stop/start but is tied to a machine. Container disk is ephemeral.
 - Programmatic Pod logs are not reliably exposed as a public REST/SDK API. Use Runpod console logs, SSH, app-level logging, object storage, or write logs to a network volume.

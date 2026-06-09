@@ -21,6 +21,15 @@ Fetch current OpenAPI before writing non-trivial automation:
 python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env openapi --output /tmp/runpod-openapi.json
 ```
 
+Live per-datacenter GPU stock:
+
+```bash
+python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env datacenter-availability --datacenter US-CA-2
+python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env datacenter-availability --datacenter US-CA-2 --gpu h200
+```
+
+This uses `runpodctl datacenter list` under the hood. It reports GPU stock, not CPU stock.
+
 ## Read First
 
 ```bash
@@ -40,6 +49,10 @@ Common REST `POST /pods` fields:
 - `gpuTypeIds`: array, e.g. `["NVIDIA L40S"]`.
 - `gpuCount`: integer.
 - `gpuTypePriority`: usually `availability` unless order matters.
+- `computeType`: `GPU` or `CPU`.
+- `cpuFlavorIds`: CPU pods only, e.g. `["cpu3g"]`.
+- `cpuFlavorPriority`: CPU pods only, usually `custom` for one exact flavor.
+- `vcpuCount`: CPU pods only, e.g. `2`.
 - `cloudType`: `SECURE` or `COMMUNITY`.
 - `containerDiskInGb`: ephemeral container disk.
 - `volumeInGb`: local persistent volume tied to the pod/machine.
@@ -53,6 +66,19 @@ Common REST `POST /pods` fields:
 - `dataCenterIds`: required when matching a network volume datacenter.
 
 Do not create pods without explicit approval. Pod creation can immediately rent GPU compute.
+
+CPU pod helper with bootstrap-friendly defaults:
+
+```bash
+python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env create-cpu-pod \
+  --datacenter US-CA-2 \
+  --network-volume-id omzkugh4ni \
+  --name mats-cpu3g-ca2-bootstrap \
+  --github-token-from-gh \
+  --yes
+```
+
+The helper sets `computeType=CPU`, `cpuFlavorIds=["cpu3g"]`, `vcpuCount=2`, starts `sshd`, injects `~/.ssh/id_ed25519.pub` as `PUBLIC_KEY`, and runs the project bootstrap from GitHub.
 
 ## Lifecycle
 
@@ -92,6 +118,13 @@ Attach a network volume by setting `networkVolumeId` on pod creation. In normal 
 - HTTP proxy: `https://{podId}-{internalPort}.proxy.runpod.net`; useful for Jupyter/UI, but has a hard timeout.
 - TCP/SSH: inspect pod `portMappings`, then connect to mapped TCP port.
 - `runpodctl ssh --podId POD_ID` can help if installed and configured.
+- If overriding `dockerStartCmd`, start `sshd` yourself. Otherwise the port mapping can exist while SSH refuses connections.
+
+Wait for SSH mapping:
+
+```bash
+python /Users/peter/.dotfiles/claude/skills/runpod/scripts/runpod_rest.py --env-file .env wait-pod POD_ID
+```
 
 ## Logs
 
