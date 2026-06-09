@@ -1,0 +1,4 @@
+name: runpod
+display_name: Runpod
+short_description: Manage Runpod pods, GPUs, storage, and APIs.
+default_prompt: "Use the Runpod skill to inspect GPU availability and plan a safe pod deployment."

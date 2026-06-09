@@ -7,8 +7,25 @@
     "pr": ""
   },
   "permissions": {
-    "defaultMode": "auto"
+    "defaultMode": "auto",
+    "allow": [
+      "Bash(codex-companion)",
+      "Bash(codex-companion help)",
+      "Bash(codex-companion help *)",
+      "Bash(codex-companion review)",
+      "Bash(codex-companion review *)",
+      "Bash(codex-companion adversarial-review)",
+      "Bash(codex-companion adversarial-review *)",
+      "Bash(codex-companion plan-review *)",
+      "Bash(codex-companion status)",
+      "Bash(codex-companion status *)",
+      "Bash(codex-companion result)",
+      "Bash(codex-companion result *)",
+      "Bash(codex-companion cancel)",
+      "Bash(codex-companion cancel *)"
+    ]
   },
+  "model": "claude-opus-4-8",
   "hooks": {
     "PostToolUse": [
       {
@@ -33,14 +50,22 @@
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": false,
     "context7@claude-plugins-official": true,
-    "pyright-lsp@claude-plugins-official": true
+    "pyright-lsp@claude-plugins-official": true,
+    "codex@codex-plugin-cc": true
+  },
+  "extraKnownMarketplaces": {
+    "codex-plugin-cc": {
+      "source": {
+        "source": "github",
+        "repo": "Crazytieguy/codex-plugin-cc"
+      }
+    }
   },
   "outputStyle": "custom",
-  "effortLevel": "medium",
+  "effortLevel": "xhigh",
   "skipDangerousModePermissionPrompt": true,
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
-  "vim": true,
-  "model": "claude-opus-4-8"
+  "vim": true
 }
