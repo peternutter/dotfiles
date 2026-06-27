@@ -7,7 +7,6 @@
     "pr": ""
   },
   "permissions": {
-    "defaultMode": "auto",
     "allow": [
       "Bash(codex-companion)",
       "Bash(codex-companion help)",
@@ -23,7 +22,8 @@
       "Bash(codex-companion result *)",
       "Bash(codex-companion cancel)",
       "Bash(codex-companion cancel *)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "model": "claude-opus-4-8",
   "hooks": {
@@ -62,10 +62,11 @@
     }
   },
   "outputStyle": "custom",
-  "effortLevel": "xhigh",
+  "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true,
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
-  "vim": true
+  "vim": true,
+  "tui": "fullscreen"
 }
