@@ -54,3 +54,5 @@
 	path = ~/.gitconfig.local
 [safe]
 	directory = *
+[url "git@github.com:"]
+	insteadOf = https://github.com/
