@@ -1,6 +1,7 @@
 {
   "env": {
-    "EDITOR": "vim"
+    "EDITOR": "vim",
+    "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION": "2000"
   },
   "attribution": {
     "commit": "",
