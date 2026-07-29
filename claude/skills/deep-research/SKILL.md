@@ -1,6 +1,6 @@
 ---
 name: deep-research
-description: Deep multi-source research using parallel sub-agents. Use when asked to research topics requiring comprehensive analysis, product comparisons, market research, technical investigations, or any query that benefits from 20+ sources. Produces cited reports saved to the notes folder.
+description: Deep multi-source research using parallel sub-agents. Use when asked to research topics requiring comprehensive analysis, product comparisons, market research, technical investigations, or any query that benefits from 20+ sources. Produces cited reports saved to the notes folder. NOT for academic paper landscapes — if the topic is research literature (papers, methods, "what work exists on X"), use the lit-review skill instead.
 metadata: {"openclaw":{"emoji":"🔬","category":"research"}}
 ---
 
@@ -12,7 +12,9 @@ Perform thorough, multi-source research by spawning parallel sub-agents that eac
 
 - User asks to "research", "deep dive", "compare", or "investigate" something
 - Topic benefits from 20+ sources and multiple angles
-- Product comparisons, market analysis, technical reviews, academic surveys
+- Product comparisons, market analysis, technical reviews
+
+**Not for academic surveys:** literature landscapes (papers, arXiv, LW/AF) route to the `lit-review` skill, which has proper academic search + PDF pipelines.
 
 ## Workflow
 

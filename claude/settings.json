@@ -26,7 +26,6 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5",
   "hooks": {
     "PostToolUse": [
       {
@@ -52,7 +51,8 @@
     "frontend-design@claude-plugins-official": false,
     "context7@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
-    "codex@codex-plugin-cc": true
+    "codex@codex-plugin-cc": true,
+    "hive@alignment-hive": true
   },
   "extraKnownMarketplaces": {
     "codex-plugin-cc": {
@@ -60,6 +60,13 @@
         "source": "github",
         "repo": "Crazytieguy/codex-plugin-cc"
       }
+    },
+    "alignment-hive": {
+      "source": {
+        "source": "github",
+        "repo": "Crazytieguy/alignment-hive"
+      },
+      "autoUpdate": true
     }
   },
   "outputStyle": "custom",

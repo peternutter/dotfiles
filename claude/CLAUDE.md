@@ -9,3 +9,7 @@
 
 # Zotero
 - Use the `/zotero` skill for all Zotero operations (search, metadata, fulltext, annotations) — it hits the REST API directly with `ZOTERO_API_KEY` + `ZOTERO_LIBRARY_ID`.
+
+# Authoring skills & hooks (rules learned from alignment-hive)
+- **Auto-expanding bash in skills/agents/commands fails hard:** if a `` !`command` `` inside a SKILL.md / agent .md returns non-zero, the ENTIRE file silently fails to load. Always write `` !`command 2>/dev/null || echo "fallback"` ``.
+- **Hooks must fail loudly, not silently:** don't end hook commands with a bare `|| true`. Wrap in an ERR trap that logs to `~/.cache/<name>/error.log` and emits a `{"systemMessage": "..."}` telling the user the hook broke. Use `"async": true` for slow SessionStart bootstrap steps so they don't block startup.
