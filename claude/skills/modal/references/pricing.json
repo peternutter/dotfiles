@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "as_of": "2026-07-21",
+    "source": "https://modal.com/pricing",
+    "note": "Hand-maintained. Re-check with refresh.sh (it prints live $/hr lines from the pricing page to reconcile against this file). Keys match Modal's gpu= strings exactly. NB: B300 is now a distinct billed SKU (pricing page 2026-07-21); older docs only exposed it via gpu=\"B200+\" billed as B200. Verify the exact gpu= string (\"B300\" vs \"B200+\") at first launch; B300 needs CUDA 13.0+ in the image.",
+    "currency": "USD"
+  },
+  "gpu_per_hour": {
+    "B300": 7.10,
+    "B200": 6.25,
+    "H200": 4.54,
+    "H100": 3.95,
+    "RTX-PRO-6000": 3.03,
+    "A100-80GB": 2.50,
+    "A100-40GB": 2.10,
+    "A100": 2.10,
+    "L40S": 1.95,
+    "A10": 1.10,
+    "L4": 0.80,
+    "T4": 0.59
+  },
+  "cpu_per_core_hour": 0.0473,
+  "memory_per_gib_hour": 0.008,
+  "volume_per_gib_month": 0.09,
+  "volume_free_tib_month": 1,
+  "included_credits_per_month": {
+    "starter": 30,
+    "team": 100
+  }
+}

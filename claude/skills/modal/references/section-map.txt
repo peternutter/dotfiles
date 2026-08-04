@@ -1,0 +1,1619 @@
+1:# Modal llms-full.txt
+17:## Guides
+23:# Images
+48:## What are Images?
+76:## Add Python packages
+128:## Add local files with `add_local_dir` and `add_local_file`
+212:## Install system packages with `.apt_install`
+221:## Set environment variables with `.env`
+233:## Run shell commands with `.run_commands`
+246:## Run a Python function during your build with `.run_function`
+292:## Attach GPUs during setup
+305:## Use `mamba` instead of `pip` with `micromamba_install`
+330:## Image caching and rebuilds
+367:## Image builder updates
+390:# Using existing images
+399:## Load an image from a public registry with `.from_registry`
+446:## Load images from private registries
+549:## Bring your own image definition with `.from_dockerfile`
+597:# Your custom startup commands here.
+626:# Named images
+644:## Publishing an Image from a script
+652:# build_image.py
+712:## Starting Sandboxes using named Images
+724:# sandbox_launcher.py
+775:## Running Functions using named Images
+782:# app.py
+794:## Tags
+801:# Fast pull from registry
+809:## How to use estargz
+858:## Supported registries
+872:# GPU acceleration
+876:## Quickstart
+893:## Specifying GPU type
+914:## Specifying GPU count
+931:## Picking a GPU
+944:## B200 GPUs
+971:## H200 and H100 GPUs
+994:## A100 GPUs
+1019:## GPU fallbacks
+1034:## Multi GPU training
+1053:## Examples and more resources
+1066:# Using CUDA on Modal
+1087:## What is CUDA?
+1163:## Install GPU-accelerated `torch` and `transformers` with `pip_install`
+1199:## For more complex setups, use an officially-supported CUDA image
+1245:## What next?
+1258:# Configuring CPU, memory, and disk
+1268:## CPU cores
+1291:## Memory
+1307:## How much can I request?
+1314:## Billing
+1320:## Resource limits
+1375:# Scaling out
+1385:## How does autoscaling work on Modal?
+1397:## Configuring autoscaling behavior
+1420:## Dynamic autoscaler updates
+1471:## Parallel execution of inputs
+1561:## Asynchronous usage
+1569:## GPU acceleration
+1574:## Scaling Limits
+1589:# Input concurrency
+1597:## Overview
+1616:## Use cases
+1640:## Enabling input concurrency
+1669:## Setting a concurrency target
+1695:## Concurrency mechanisms
+1707:# Each container can execute up to 10 inputs in separate threads
+1721:# Each container can execute up to 10 inputs with separate async tasks
+1729:## Gotchas
+1765:# Batch Processing
+1771:## Background Execution with `.spawn_map`
+1778:# Kick off asynchronous jobs with `modal run --detach batch_processing.py`
+1801:## Parallel Processing with `.map`
+1808:# Run jobs and collect results with `modal run gather.py`
+1832:## Integration with Existing Systems
+1851:# Job processing
+1858:## Creating jobs with .spawn()
+1871:# my_job_queue.py
+1928:## Integration with web frameworks
+1936:# my_job_queue_endpoint.py
+1990:# Make a POST request to your app endpoint with.
+1994:# Use the call_id value from above.
+1998:## Scaling and reliability
+2012:# Dynamic batching
+2027:## Enable dynamic batching with `@batched`
+2069:## Use `@batched` with functions that take and return lists
+2081:## Modal `Cls` methods are compatible with dynamic batching
+2101:## Configure the wait time and batch size of dynamic batches
+2126:## Serve Web Functions with dynamic batching
+2182:# Multi-node clusters
+2235:## Scheduling
+2249:## Networking
+2268:## Cluster Info
+2277:## Fault Tolerance
+2295:## Examples
+2348:# Apps, Functions, and entrypoints
+2375:## Ephemeral Apps
+2407:## Deployed Apps
+2420:## Entrypoints for ephemeral Apps
+2436:# script.py
+2468:# script.py
+2488:## Apps were once Stubs
+2496:# Managing deployments
+2514:## Creating deployments
+2544:## Viewing deployments
+2560:## Updating deployments
+2585:## Deployment rollbacks
+2597:## Stopping deployments
+2609:# Invoking deployed functions
+2620:## Invoking with Python
+2789:## Invoking with HTTPS
+2813:# Continuous deployment
+2819:## GitHub Actions
+2873:# Run untrusted code with Restricted Functions
+2877:## Create a Restricted Function
+2894:## Sandboxes offer an alternative interface for untrusted code
+2912:## Best Practices
+2979:## Example: Running LLM-generated Code
+3027:## Error Handling
+3047:# Sandboxes
+3055:## What are Sandboxes and why should I use them?
+3192:## Lifecycle
+3328:# Blocks until port 8080 is accepting connections
+3331:# The server is now ready — interact with it via tunnels, exec, etc.
+3347:# Blocks until port 8080 is accepting connections
+3350:# The server is now ready — interact with it via tunnels, exec, etc.
+3435:# Blocks until "test -f /tmp/ready" exits with code 0
+3438:# The sandbox is now ready
+3458:# Blocks until "test -f /tmp/ready" exits with code 0
+3461:# The sandbox is now ready
+3596:## Return Codes
+3610:# Read returncode of individual process
+3615:# Read returncode of finished sandbox
+3616:# Terminate sends a SIGKILL, code 137
+3628:# Read returncode of individual process
+3633:# Read returncode of finished sandbox
+3634:# Terminate sends a SIGKILL, code 137
+3678:## Configuration
+3741:## Environments
+3834:# build_sandbox_image.py
+3837:# Method-chained image
+3840:# Or, for an external registry image with a fixed tag:
+3841:# image = modal.Image.from_registry("ubuntu:24.04")
+3846:# sandbox_app.py
+3858:# build_sandbox_image.py
+3861:# Method-chained image
+3864:# Or, for an external registry image with a fixed tag:
+3865:# image = modal.Image.from_registry("ubuntu:24.04")
+3871:# app.py
+3993:## Running a Sandbox with an entrypoint
+4051:## Referencing Sandboxes from other code
+4062:# ... later in the program ...
+4080:# ... later in the program ...
+4131:## Named Sandboxes
+4144:# This will raise a modal.exception.AlreadyExistsError.
+4154:# This will raise a modal.exception.AlreadyExistsError.
+4194:# Returns the currently running Sandbox with the name "my-name" from the
+4195:# deployed app named "my-app".
+4209:# Returns the currently running Sandbox with the name "my-name" from the
+4210:# deployed app named "my-app".
+4258:## Tagging
+4407:## Cleaning up Client-side Connections
+4460:# Running commands in Sandboxes
+4492:## Input
+4523:## Output
+4582:# Default behavior: buffered in memory.
+4593:# Print the stream to STDOUT as it comes in.
+4603:# Discard all output.
+4619:# Networking and security
+4624:## Outbound access control
+4775:## Inbound access control
+4818:## Connecting to Sandboxes with HTTP and WebSockets
+4824:# Start a Sandbox with a server running on port 8080.
+4830:# Create a connect token, optionally including arbitrary user metadata.
+4833:# Make an HTTP request, passing the token in the Authorization header.
+4836:# You can also put the token in a `_modal_connect_token` query param.
+4978:## Security model
+4992:# Filesystem Access
+4997:## Filesystem API
+5015:# Write text to a file in the Sandbox.
+5018:# Read the file back from the Sandbox into a string.
+5096:# Write a local file.
+5104:# Copy the local file into the Sandbox.
+5107:# Copy it back to the local filesystem.
+5176:# Set up a structured project.
+5179:# Let the Sandbox do some work and write outputs to files.
+5183:# Inspect what was produced.
+5187:# Check that the result file has content before downloading it.
+5193:# Clean up the whole project.
+5275:## Using Volumes
+5286:# Find or create a Volume with the name "my-volume".
+5292:# Read a file in the Volume.
+5297:# Write a file to the Volume.
+5303:# Access the Volume file from outside the Sandbox.
+5326:# Each Sandbox only sees its own subdirectory of the Volume.
+5331:# /data inside the Sandbox maps to /users/user_123 in the Volume.
+5332:# The Sandbox cannot see or modify files belonging to other users.
+5409:# Write files to the volume
+5412:# Commit changes immediately
+5418:# Changes are now persisted and visible to other containers
+5427:## Adding files to an Image
+5439:# Eagerly build the image - otherwise the Image will lazily build when the
+5440:# Sandbox is created.
+5487:# Snapshots
+5504:## Snapshot Retention
+5525:# Filesystem snapshot with custom TTL of 7 days
+5528:# Filesystem snapshot with no expiry (retain indefinitely, like the pre-v1.5 default)
+5531:# Directory snapshot with custom TTL of 7 days
+5534:# Directory snapshot with no expiry
+5589:## Filesystem Snapshots
+5621:## Directory Snapshots
+5641:# Write some dummy data
+5644:# Snapshot the directory
+5647:# Ok to throw away the old sandbox at this point
+5650:# Mount the snapshot in a new Sandbox
+5658:# The sandbox now has access to the previous project state
+5766:## Memory Snapshots
+5800:# Talk to snapshotted sandbox http.server
+5812:# ... save the Sandbox ID (sb-123abc) for later
+5813:# sometime in the future...
+5827:# Add a file to the snapshotted sandbox
+5834:# Talk to re-snapshotted sandbox http.server
+5849:## Persisting Sandbox State
+5865:# Restore from snapshot, or use base image
+5873:# Run agent which exits when ready to be snapshotted
+5877:# Snapshot and store the object_id
+5882:## Deleting Snapshots
+5895:# Get the image ID from a filesystem or directory snapshot
+5897:# or: image = sb.snapshot_directory("/project")
+5900:# Later, delete the snapshot when no longer needed
+5937:# Sandbox resources and pricing
+5943:## Pay for what you use
+5955:## Configuring resources
+6074:## Tuning your requests
+6091:## GPU Sandboxes
+6099:## Additional resources
+6107:# VM Sandboxes
+6129:# add a script that uses VM Sandbox features
+6168:# Create an image for the parent Modal Sandbox, with Docker installed.
+6274:## Improvements over gVisor sandboxes
+6289:## Resource model
+6301:## Limitations
+6316:# Modal Notebooks
+6332:## Getting started
+6360:## Kernel resources
+6378:## Custom images, volumes, secrets, and cloud storage
+6393:# Image definition here:
+6452:## Access and sharing
+6462:## Interactive file viewer
+6477:## Editor features
+6489:## Widgets
+6499:## Cell magic
+6525:## Roadmap
+6550:# Secrets
+6562:## Limits
+6571:## Deploy Secrets from the Modal Dashboard
+6581:## Use Secrets in your Modal Apps
+6614:## Create Secrets programmatically
+6646:## Interact with Secrets from the command line
+6677:# Environment variables
+6686:## Container runtime environment variables
+6703:## Function runtime environment variables
+6714:## Sandbox environment variables
+6720:## Container image environment variables
+6734:# Scheduling remote cron jobs
+6739:## Basic scheduling
+6745:# heavy.py
+6757:# heavy.py
+6792:## Monitoring your scheduled runs
+6801:## Schedule types
+6811:# runs once every 5 hours
+6821:# runs at 8 am (UTC) every Monday
+6826:# runs daily at 6 am (New York time)
+6840:# Web Functions
+6857:## Simple endpoints
+6953:## How do Web Functions run in the cloud?
+7010:## Serving ASGI and WSGI apps
+7112:## Non-ASGI web servers
+7145:## Serve many configurations with parametrized functions
+7177:## WebSockets
+7195:## Performance and scaling
+7217:## Authentication
+7293:# Streaming endpoints
+7302:## Simple example
+7338:## Streaming responses with `.remote`
+7361:## Streaming responses with `.map` and `.starmap`
+7404:# Notice that this is an async generator.
+7410:## Further examples
+7418:# Web Function URLs
+7423:## Determine the Web Function URL from code
+7459:## Auto-generated URLs
+7497:## User-specified labels
+7520:## Ephemeral apps
+7535:## Truncation
+7552:## Custom domains
+7643:# Request timeouts
+7674:## Polling solutions
+7721:# Proxy Auth Tokens
+7752:# modal-http: missing credentials for proxy authorization
+7753:# curl: (22) The requested URL returned error: 401
+7754:# https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
+7777:## Restricting tokens to specific Environments
+7785:# Tunnels
+7816:## Build with tunnels
+7931:## Pricing
+7943:## Security
+7962:# Proxies
+7978:## Creating a Proxy
+7990:## Using a Proxy
+8017:## Proxy performance
+8024:## Adding more IP addresses to a Proxy
+8034:## Proxies and Sandboxes
+8059:# Cluster networking
+8080:## Private networking
+8092:## Region boundaries
+8098:## Public network access to cluster networking
+8108:# Passing local data
+8114:## Passing function arguments
+8139:## Including local files
+8145:# Volumes
+8162:## Pricing
+8166:## Volumes v2
+8174:## Creating a Volume
+8187:## Using a Volume on Modal
+8212:## Mount options
+8250:# /user_data inside of the contianer is now referencing /users/user_123 in the Volume
+8260:## Downloading a file from a Volume
+8280:## Using a Volume from outside of Modal
+8330:## Volume commits and reloads
+8407:## Model serving
+8443:## Model checkpointing
+8486:## Volume performance
+8501:## Filesystem consistency
+8565:## Disk usage reporting
+8576:## Volumes v2 overview
+8667:# Persist changes and check for errors
+8716:# Option 1: use `cp`
+8720:# Option 2: use `rsync`
+8726:## Further examples
+8734:# Storing model weights on Modal
+8742:## Storing weights in a Modal Volume
+8824:## Reading model weights from a Modal Volume
+8838:## Storing weights in the Modal Image
+8852:## Optimizing model weight reads with `@modal.enter`
+8901:## Storing weights from the Hugging Face Hub on Modal
+8915:# create a Volume, or retrieve it if it exists
+8919:# define dependencies for downloading model
+8943:# Cloud bucket mounts
+8953:## Mounting Cloudflare R2 buckets
+8967:## Mounting Google Cloud Storage buckets
+8973:## Mounting S3 buckets
+9152:## Limitations and troubleshooting
+9212:# 1. Build the archive entirely in memory
+9216:# 2. Copy it once, sequentially, to the mount point
+9240:# Dicts
+9263:## Modal Dicts are Python dicts in the cloud
+9271:# create a remote Dict
+9281:## You can access Modal Dicts asynchronously
+9310:## Modal Dicts are not _exactly_ Python dicts
+9339:# Queues
+9369:## Modal Queues are Python queues in the cloud
+9385:## Queues are partitioned by key
+9421:## You can access Modal Queues synchronously or asynchronously, blocking or non-blocking
+9450:## Modal Queues are not _exactly_ Python Queues
+9466:# Large dataset ingestion
+9474:## Configure your Function for heavy disk usage
+9505:## Experimentation
+9513:## Downloading
+9531:# 1. Download into /tmp/
+9538:# 2. Copy (without transform) into mounted volume.
+9543:## Transforming
+9562:## Examples
+9579:# Cold start performance
+9583:## What is a cold start?
+9611:## Reduce time spent queueing for warm containers
+9724:## Reduce latency from initialization
+9844:# Memory Snapshots
+9862:## CPU Memory Snapshots
+9892:## Container lifecycle hooks and Memory Snapshots
+9911:## GPU Memory Snapshots
+10020:## Memory Snapshots FAQs
+10060:## Advanced usage of Memory Snapshots
+10180:# High-performance LLM inference
+10221:## Achieving high throughput LLM inference (TPS)
+10311:## Minimizing LLM inference latency (TTFT/TPOT/TTLT)
+10399:## High performance LLM inference for bursty workloads (cold start time)
+10501:# Failures and retries
+10507:## Automatically recover from flakes with `retries`
+10522:## Handle failures in `Function.map`
+10531:## Container crashes
+10545:# Preemption
+10556:## Preparing for interruptions
+10570:## Non-preemptible Functions
+10579:## Non-preemptible Sandboxes
+10586:# Timeouts
+10636:## Handling timeouts
+10656:## Timeout accuracy
+10665:# GPU Health
+10672:## `[gpu-health]` logging
+10686:## Level
+10691:## Handling Application-level health issues
+10712:## Xid & SXid
+10728:# Troubleshooting
+10735:## "Command not found" errors
+10749:## Function side effects
+10783:## Heartbeat timeout
+10795:## `413 Content Too Large` errors
+10802:## Outdated kernel version (4.4.0)
+10810:## CUDA driver initialization failed on L4 GPU type
+10847:## Connection issues in forked processes
+10871:# Security and privacy at Modal
+10875:## Application security (AppSec)
+10902:## Corporate security (CorpSec)
+10916:## Network and infrastructure security (InfraSec)
+10930:## Vulnerability remediation
+10949:## Shared responsibility model
+10958:## SOC 2
+10963:## HIPAA
+10973:## PCI
+10984:## Bug bounty program
+10993:## Data privacy
+11036:## Questions?
+11042:# Customer Supplied Encryption Keys
+11057:## How CSEK works
+11101:## Supported resources
+11110:## Directory Snapshots
+11142:# Store both values in your own durable systems.
+11337:# Audit Logs
+11356:## Fields
+11371:## Filtering
+11386:## Actions
+11455:# Using OIDC to authenticate with external services
+11463:## How it works
+11518:## Demo usage with AWS S3
+11653:# Trade a Modal OIDC token for AWS credentials
+11671:# List the contents of an S3 bucket
+11692:## Demo usage with AWS Elastic Container Registry (ECR)
+11717:# Login with the AWS CLI
+11720:# Build the Docker Image
+11723:# Push the image to ECR
+11749:## Next steps
+11758:# Connecting Modal to your Datadog account
+11764:## What this integration does
+11772:## Installing the integration
+11782:## Metrics
+11816:## Log attributes
+11837:## Structured logging
+11849:## Cost Savings
+11860:## Uninstalling the integration
+11876:# Connecting Modal to your OpenTelemetry Provider
+11882:## What this integration does
+11890:## Metrics
+11917:## Custom metrics
+11943:## Installing the integration
+11965:## Uninstalling the integration
+11975:# Okta SSO
+11980:## Prerequisites
+11986:## Supported features
+11995:## Configuration
+12048:## SP-initiated SSO
+12057:# Custom SAML SSO
+12066:## Prerequisites
+12072:## Supported features
+12078:## Configuration
+12129:## Login URL
+12135:## Troubleshooting
+12143:# Slack notifications
+12147:## Prerequisites
+12152:## Supported notifications
+12159:## Slack Permissions
+12172:## Configuration
+12198:# Workspaces
+12212:## Create a Workspace
+12233:## Auto-joining a Workspace associated with a GitHub organization
+12241:## Inviting new Workspace members
+12252:## Create a token for a Workspace
+12267:## Switching active Workspace
+12282:## Administering Workspace membership
+12308:## Leaving a Workspace
+12316:# Environments
+12365:## Environment web suffixes
+12371:## Cross environment lookups
+12396:# Modal user account setup
+12409:## What GitHub permissions does signing up require?
+12417:## How can I change my email?
+12423:# Service Users
+12427:## Create a Service User
+12440:## Use Service User Tokens
+12455:## Delete a Service User
+12463:## Permissions
+12467:## Securing Service Users
+12480:# Role-Based Access Control (RBAC)
+12494:## Workspace Roles
+12504:## Environment Roles
+12513:## Setting up restricted Environments
+12543:## Service users and service tokens
+12558:## Proxy auth tokens for Web Functions
+12582:## Cross-Environment access
+12616:## Protecting production secrets with restricted Environments
+12629:## Common access patterns
+12644:## FAQ
+12664:# Billing
+12668:## Billing frequency and incremental billing
+12674:## Setting a workspace budget
+12678:## Updating billing information
+12684:## Viewing invoice history
+12688:## Generating billing reports
+12694:## Attributing costs
+12704:## Custom invoicing
+12714:# Feature Maturity
+12723:## Release Phases
+12743:## Experimental SDK
+12751:## SDK Deprecations
+12757:## Other interfaces
+12761:## Providing Feedback
+12770:# Modal SDKs for JavaScript and Go
+12782:## Installation
+12786:## JavaScript/TypeScript
+12819:## Go
+12864:## Support
+12870:# Modal 1.0 migration guide
+12888:## Deprecating `Image.copy_*` methods
+12909:## Deprecating `Mount` as part of the public API
+12931:# Mounting local files
+12933:# Old way (deprecated)
+12939:# New way
+12945:## Mounting local Python source code
+12947:# Old way (deprecated)
+12953:# New way
+12959:## Using Image.copy_mount
+12961:# Old way (deprecated)
+12965:# New way
+12973:## Deprecating the `@modal.build` decorator
+13020:## Requiring explicit inclusion of local Python dependencies
+13055:## Renaming autoscaler parameters
+13074:## Renaming `modal.web_endpoint` to `modal.fastapi_endpoint`
+13085:## Replacing `allow_concurrent_inputs` with `@modal.concurrent`
+13101:# Old way, with a function (deprecated)
+13106:# New way, with a function
+13112:# Old way, with a class (deprecated)
+13117:# New way, with a class
+13128:## Deprecating the `.lookup` method on Modal objects
+13155:## Removing support for custom Cls constructors
+13164:# Old way (deprecated)
+13170:# New way
+13215:## Simplifying Cls lookup patterns
+13223:# Documented pattern
+13228:# Alternate pattern: skipping the object instantiation
+13232:# Alternate pattern: looking up the method as a Function
+13244:## Deprecating `modal.gpu` objects
+13263:## Requiring explicit invocation for module mode
+13277:# Project structure
+13279:## Apps spanning multiple files
+13319:# Contents of __init__.py
+13346:# Contents of deploy.py
+13363:## Including local dependencies
+13386:# Developing and debugging
+13393:## Interactivity
+13535:## Live updating
+13563:## Observability
+13612:# Developing Modal code with LLMs and agents
+13627:# Modal Rules and Guidelines for LLMs
+13631:## General
+13637:## Modal documentation
+13645:## Core Modal concepts
+13743:## Differences from standard Python development
+13748:## Modal coding style
+13754:## Common commands
+13778:## Testing and debugging
+13785:# Jupyter notebooks
+13793:## Modal inside Jupyter
+13799:# Cell 1
+13809:# Cell 2
+13838:## Jupyter inside Modal
+13853:## Further examples
+13860:# Asynchronous API usage
+13890:## Async functions
+13925:# Global variables
+13959:## Warning about regular module globals
+13969:# blob.json doesn't exist on the remote worker, so this will cause an error there
+13979:# Region selection
+13985:## Specifying a container region
+14059:## Regional routing
+14088:## Optimizing latency
+14113:# Container lifecycle hooks
+14132:## `@modal.enter`
+14188:## `@modal.exit`
+14225:## Lifecycle hooks for Web Functions
+14253:# Parametrized functions
+14308:## Looking up a parametrized function
+14321:## Parametrized Web Functions
+14348:## Using parametrized functions with lifecycle functions
+14371:## Performance
+14377:# Dynamic Function configuration
+14381:## Basic configuration
+14414:## Input concurrency and batching
+14425:# This Function uses a GPU with input concurrency
+14429:## Autoscaling considerations
+14441:## Dynamic Cls configuration
+14452:# S3 Gateway endpoints
+14462:## Endpoint configuration
+14471:## Inter-region costs
+14482:# GPU Metrics
+14493:## API Reference
+14503:# modal.App
+14563:## name
+14574:## app_id
+14585:## description
+14596:## lookup
+14625:## get_dashboard_url
+14643:## run
+14703:## deploy
+14768:## local_entrypoint
+14830:## function
+14887:## cls
+14941:## include
+14983:## set_tags
+15002:## get_tags
+15023:# modal.Client
+15029:## is_closed
+15040:## hello
+15054:## from_credentials
+15082:## get_input_plane_metadata
+15103:# modal.CloudBucketMount
+15211:# modal.Cls
+15223:## hydrate
+15236:## from_name
+15271:## with_options
+15325:## with_concurrency
+15349:## with_batching
+15379:# modal.Cron
+15432:# modal.Dict
+15478:## hydrate
+15491:## objects
+15611:## name
+15625:## ephemeral
+15651:## from_name
+15678:## from_id
+15713:## info
+15720:## clear
+15727:## get
+15736:## contains
+15743:## len
+15752:## update
+15759:## put
+15769:## pop
+15778:## keys
+15788:## values
+15798:## items
+15814:# modal.Environment
+15820:## hydrate
+15833:## name
+15839:## objects
+15889:## members
+15911:# {
+15912:#     "users": {"alice": "contributor", "bob": "viewer"},
+15913:#     "service_users": {"alice-bot": "contributor"},
+15914:# }
+15954:## from_context
+15967:## from_name
+15980:# modal.Error
+16007:# modal.FilePatternMatcher
+16025:# You can also negate the matcher.
+16044:## can_prune_directories
+16055:## from_file
+16082:# modal.Function
+16093:## hydrate
+16106:## update_autoscaler
+16142:## from_name
+16177:## get_web_url
+16188:## with_options
+16222:# From a local entrypoint or another Function
+16227:## with_concurrency
+16237:## with_batching
+16247:## remote
+16263:## remote_gen
+16279:## local
+16299:## spawn
+16319:## get_raw_f
+16330:## get_current_stats
+16341:## map
+16389:## starmap
+16420:## for_each
+16435:## spawn_map
+16470:# modal.FunctionCall
+16485:## hydrate
+16498:## num_inputs
+16509:## get
+16534:## iter
+16568:## get_call_graph
+16583:## cancel
+16598:## from_id
+16620:# Spawn a FunctionCall and keep track of its object ID
+16624:# Later, use the ID to re-instantiate the FunctionCall object
+16629:## gather
+16665:# modal.Image
+16676:## add_local_file
+16705:## add_local_dir
+16758:# When including files is simpler than excluding them, you can use the `~` operator to invert the matcher.
+16765:# You can also read ignore patterns from a file.
+16773:## add_local_python_source
+16814:# includes everything except data.json
+16817:# exclude large files
+16824:## from_id
+16842:## build
+16872:# Save the image id
+16875:# Reference the image with the id or uses it another context.
+16897:# No need to explicitly build the image for defining a function.
+16903:## pip_install
+16956:## pip_install_private_repos
+17011:## pip_install_from_requirements
+17037:## pip_install_from_pyproject
+17069:## uv_pip_install
+17110:## poetry_install_from_file
+17149:## uv_sync
+17195:## dockerfile_commands
+17225:# By default a .dockerignore file is used if present in the current working directory
+17245:# When including files is simpler than excluding them, you can use the `~` operator to invert the matcher.
+17251:# You can also read ignore patterns from a file.
+17258:## entrypoint
+17273:## shell
+17288:## run_commands
+17309:## micromamba
+17325:## micromamba_install
+17347:## from_registry
+17393:## from_gcp_artifact_registry
+17441:## from_aws_ecr
+17489:## from_dockerfile
+17522:# By default a .dockerignore file is used if present in the current working directory
+17546:# When including files is simpler than excluding them, you can use the `~` operator to invert the matcher.
+17553:# You can also read ignore patterns from a file.
+17561:## from_scratch
+17590:## debian_slim
+17606:## apt_install
+17632:## run_function
+17688:## env
+17712:## workdir
+17738:## cmd
+17763:## pipe
+17786:## imports
+17807:## from_name
+17826:## publish
+17851:# modal.NetworkFileSystem
+17895:## hydrate
+17908:## from_name
+17938:## ephemeral
+17962:## delete
+17968:## write_file
+17980:## read_file
+17987:## iterdir
+17999:## add_local_file
+18005:## add_local_dir
+18011:## listdir
+18023:## remove_file
+18036:# modal.Period
+18081:# modal.Probe
+18092:# Wait until a file exists.
+18097:# Wait until a TCP port is accepting connections.
+18113:## with_tcp
+18119:## with_exec
+18131:# modal.Proxy
+18142:## hydrate
+18155:## from_name
+18181:# modal.Queue
+18198:# Create an ephemeral queue which is anonymous and garbage collected
+18223:# You can also create persistent queues that can be used across apps
+18260:## hydrate
+18273:## objects
+18393:## name
+18399:## validate_partition_key
+18405:## ephemeral
+18431:## from_name
+18458:## from_id
+18493:## info
+18500:## clear
+18521:## get
+18541:## get_many
+18564:## put
+18587:## put_many
+18610:## len
+18626:## iterate
+18646:# modal.Retries
+18660:# Basic configuration.
+18661:# This sets a policy of max 4 retries with 1-second delay between failures.
+18666:# Fixed-interval retries with 3-second delay between failures.
+18677:# Exponential backoff, with retry delay doubling after each failure.
+18708:# modal.Sandbox
+18719:## hydrate
+18732:## create
+18806:## detach
+18817:## from_name
+18841:## from_id
+18859:## get_tags
+18870:## set_tags
+18882:## snapshot_filesystem
+18899:## mount_image
+18926:# You can later mount this snapshot to another Sandbox:
+18932:## unmount_image
+18947:## snapshot_directory
+18974:# You can later mount this snapshot to another Sandbox:
+18980:## wait
+18991:## wait_until_ready
+19016:## tunnels
+19038:## create_connect_token
+19056:## reload_volumes
+19065:## terminate
+19082:## poll
+19093:## exec
+19132:## filesystem
+19506:## open
+19535:## ls
+19552:## mkdir
+19561:## rm
+19570:## watch
+19590:## stdout
+19602:## stderr
+19614:## stdin
+19626:## returncode
+19637:## list
+19661:# modal.SandboxSnapshot
+19673:## hydrate
+19686:## from_id
+19708:# modal.Secret
+19722:## hydrate
+19735:## objects
+19860:## name
+19866:## from_dict
+19891:## from_local_environ
+19908:## from_dotenv
+19942:## from_name
+19972:## info
+19979:## update
+19995:# modal.Tunnel
+20009:## url
+20016:## tls_socket
+20023:## tcp_socket
+20036:# modal.Volume
+20082:## hydrate
+20095:## objects
+20217:## name
+20223:## with_mount_options
+20268:## from_name
+20302:## from_id
+20337:## ephemeral
+20364:## info
+20371:## commit
+20381:## reload
+20393:## iterdir
+20404:## listdir
+20415:## read_file
+20440:## remove_file
+20447:## copy_files
+20480:## batch_upload
+20505:## rename
+20517:# modal.Workspace
+20523:## hydrate
+20536:## name
+20542:## members
+20564:## from_context
+20582:# modal.asgi_app
+20612:# modal.batched
+20624:# Stack the decorator under `@app.function()` to enable dynamic batching
+20630:# call batched_multiply with individual inputs
+20631:# batched_multiply.remote.aio(2, 100)
+20633:# With `@app.cls()`, apply the decorator to a method (this may change in the future)
+20647:# modal.billing
+20649:## modal.billing.WorkspaceBillingReportItem
+20661:## modal.billing.workspace_billing_report
+20700:# modal.call_graph
+20702:## modal.call_graph.InputInfo
+20715:## modal.call_graph.InputStatus
+20738:# modal.concurrent
+20766:# Stack the decorator under `@app.function()` to enable input concurrency
+20773:# With `@app.cls()`, apply the decorator at the class level, not on individual methods
+20790:# modal.config
+20883:## modal.config.Config
+20930:## modal.config.config_profiles
+20940:## modal.config.config_set_active_profile
+20957:# modal.container_process
+20959:## modal.container_process.ContainerProcess
+21025:# modal.current_function_call_id
+21048:# modal.current_input_id
+21071:# modal.enable_output
+21098:# modal.enter
+21113:# modal.exception
+21117:## Notes on `grpclib.GRPCError` migration
+21148:## modal.exception.AlreadyExistsError
+21178:## modal.exception.AsyncUsageWarning
+21186:## modal.exception.AuthError
+21216:## modal.exception.ClientClosed
+21222:## modal.exception.ConflictError
+21252:## modal.exception.ConnectionError
+21260:## modal.exception.DataLossError
+21290:## modal.exception.DeprecationError
+21298:## modal.exception.DeserializationError
+21306:## modal.exception.Error
+21327:## modal.exception.ExecTimeoutError
+21335:## modal.exception.ExecutionError
+21343:## modal.exception.FilesystemExecutionError
+21351:## modal.exception.FunctionTimeoutError
+21359:## modal.exception.InputCancellation
+21371:## modal.exception.InteractiveTimeoutError
+21379:## modal.exception.InternalError
+21409:## modal.exception.InternalFailure
+21417:## modal.exception.InvalidError
+21447:## modal.exception.LogsFetchError
+21455:## modal.exception.ModuleNotMountable
+21461:## modal.exception.MountUploadTimeoutError
+21469:## modal.exception.NotFoundError
+21499:## modal.exception.OutputExpiredError
+21507:## modal.exception.PermissionDeniedError
+21537:## modal.exception.RemoteError
+21545:## modal.exception.RequestSizeError
+21553:## modal.exception.ResourceExhaustedError
+21583:## modal.exception.SandboxFilesystemDirectoryNotEmptyError
+21591:## modal.exception.SandboxFilesystemError
+21599:## modal.exception.SandboxFilesystemFileTooLargeError
+21607:## modal.exception.SandboxFilesystemIsADirectoryError
+21615:## modal.exception.SandboxFilesystemNotADirectoryError
+21623:## modal.exception.SandboxFilesystemNotFoundError
+21631:## modal.exception.SandboxFilesystemPathAlreadyExistsError
+21639:## modal.exception.SandboxFilesystemPermissionError
+21647:## modal.exception.SandboxTerminatedError
+21655:## modal.exception.SandboxTimeoutError
+21663:## modal.exception.SerializationError
+21671:## modal.exception.ServerWarning
+21679:## modal.exception.ServiceError
+21709:## modal.exception.TimeoutError
+21717:## modal.exception.UnimplementedError
+21747:## modal.exception.VersionError
+21755:## modal.exception.VolumeUploadTimeoutError
+21763:## modal.exception.WorkspaceManagementError
+21771:## modal.exception.simulate_preemption
+21807:# modal.exit
+21822:# modal.fastapi_endpoint
+21849:# modal.file_io
+21851:## modal.file_io.FileIO
+21974:## modal.file_io.ls
+21980:## modal.file_io.mkdir
+21986:## modal.file_io.rm
+21992:## modal.file_io.watch
+22005:# modal.forward
+22123:# modal.interact
+22139:# modal.io_streams
+22141:## modal.io_streams.StreamReader
+22165:## modal.io_streams.StreamWriter
+22238:# modal.is_local
+22256:# modal.method
+22280:# modal.parameter
+22304:# modal.web_server
+22342:# modal.wsgi_app
+22372:# `modal app`
+22396:## `modal app dashboard`
+22425:## `modal app history`
+22455:## `modal app list`
+22471:## `modal app logs`
+22552:## `modal app rollback`
+22591:## `modal app rollover`
+22627:## `modal app stop`
+22645:# `modal billing`
+22663:## `modal billing report`
+22713:# `modal bootstrap`
+22731:# `modal changelog`
+22776:# `modal config`
+22798:## `modal config set-environment`
+22817:## `modal config show`
+22834:# `modal container`
+22855:## `modal container exec`
+22870:## `modal container list`
+22887:## `modal container logs`
+22950:## `modal container stop`
+22971:# `modal dashboard`
+22987:# `modal deploy`
+23014:# `modal dict`
+23037:## `modal dict clear`
+23053:## `modal dict create`
+23070:## `modal dict delete`
+23087:## `modal dict get`
+23104:## `modal dict items`
+23125:## `modal dict list`
+23143:# `modal environment`
+23174:## `modal environment create`
+23189:## `modal environment delete`
+23206:## `modal environment list`
+23221:## `modal environment members`
+23290:## `modal environment update`
+23308:# `modal image`
+23326:## `modal image names`
+23363:# `modal profile`
+23383:## `modal profile activate`
+23397:## `modal profile current`
+23411:## `modal profile list`
+23428:# `modal queue`
+23451:## `modal queue clear`
+23469:## `modal queue create`
+23486:## `modal queue delete`
+23503:## `modal queue len`
+23520:## `modal queue list`
+23536:## `modal queue peek`
+23554:# `modal run`
+23607:# `modal secret`
+23627:## `modal secret create`
+23645:## `modal secret delete`
+23662:## `modal secret list`
+23680:# `modal serve`
+23712:# `modal setup`
+23729:# `modal shell`
+23799:# `modal skills`
+23819:## `modal skills install`
+23837:## `modal skills show`
+23851:## `modal skills update`
+23871:# `modal token`
+23891:## `modal token info`
+23905:## `modal token new`
+23922:## `modal token set`
+23945:# `modal volume`
+23974:## `modal volume cp`
+23992:## `modal volume create`
+24008:## `modal volume dashboard`
+24023:## `modal volume delete`
+24040:## `modal volume get`
+24068:## `modal volume list`
+24084:## `modal volume ls`
+24100:## `modal volume put`
+24121:## `modal volume rename`
+24137:## `modal volume rm`
+24153:# Changelog
+24157:## Latest
+24178:## 1.4
+24274:## 1.3
+24358:## 1.2
+24479:## 1.1
+24545:# uv_pip_install accepts a list of packages, like pip_install, but up to 50% faster
+24548:# uv_sync accepts a local `uv_project_dir` (defaulting to the local working directory)
+24549:# and uses the pyproject.toml and uv.lock files to specify the environment
+24573:## 1.0
+24686:## Examples
+24692:# Build a coding agent with Modal Sandboxes and LangGraph
+24703:## Setup
+24731:## Creating a Sandbox
+24784:## Constructing the agent's graph
+24851:## Running the Graph
+24890:# Initialize the text generation pipeline with the GPT-2 model
+24893:# Define a prompt for the model to generate text from
+24896:# Generate text using the model
+24899:# Print the generated text
+24908:# Algolia docsearch crawler
+24915:## Basic setup
+24944:## Configure the crawler
+25016:## Create an API key
+25024:## The actual function
+25058:## Deploy the indexer
+25074:## Entrypoint for development
+25088:# Embed 30 million Amazon reviews at 575k tokens per second with Qwen2-7B
+25150:## Load the data and start the inference job
+25206:## Massively scaling up and scaling out embedding inference on many beefy GPUs
+25313:## Helper Functions
+25401:# Run Anthropic's computer use demo in a Modal Sandbox
+25406:## Sandbox Setup
+25517:## Demo Streamlit application.
+25900:# Serve a dynamic SVG badge
+25918:## Defining the Web Function
+25951:## Running and deploying
+25977:# Hyperparameter search
+25982:## Defining the image
+25996:## The Modal function
+26019:## Parallel search
+26035:# Hello world wide web!
+26053:## Turn a Modal Function into an API endpoint with a single decorator
+26098:## Send data to a Web Function
+26166:## Handle expensive startup with `modal.Cls`
+26197:## Protect Web Functions with proxy authentication
+26241:## What next?
+26255:# Fast Whisper inference using dynamic batching
+26266:## Setup
+26281:## Define a container image
+26309:## Caching the model weights
+26329:## The model class
+26401:## Transcribe a dataset
+26424:## Run the model
+26441:# Render a video with Blender on many GPUs or CPUs in parallel
+26458:## Defining a Modal app
+26489:## Rendering a single frame
+26576:## Combining frames into a video
+26609:## Rendering in parallel in the cloud from the comfort of the command line
+26652:# Fold proteins with Boltz-2
+26667:## Setup
+26683:## Fold a protein from the command line
+26733:## Installing Boltz-2 Python dependencies on Modal
+26748:## Storing Boltz-2 model weights on Modal with Volumes
+26766:## Running Boltz-2 on Modal
+26808:## Addenda
+26867:# Example (cache_aware_buffer.py)
+27234:# Example (cbx_load_test.py)
+27333:# Example (cbx_locustfile.py)
+27392:# Fold proteins with Chai-1
+27416:## Setup
+27435:## Fold a protein from the command line
+27492:## Installing Chai-1 Python dependencies on Modal
+27517:## Storing Chai-1 model weights on Modal with Volumes
+27552:## Storing Chai-1 outputs on Modal Volumes
+27575:## Running Chai-1 on Modal
+27634:## Addenda
+27701:# Chat with PDF: RAG with ColQwen2
+27712:## Setup
+27730:## Setting up dependencies
+27768:## Specifying the ColQwen2 model
+27779:## Managing state with Modal Volumes and Dicts
+27868:## Defining a Chat with PDF service
+28028:## Loading PDFs as images
+28052:## Chatting with a PDF from the terminal
+28102:## A hosted Gradio interface
+28189:## Addenda
+28216:# Create a Chatterbox TTS API on Modal
+28227:## Setup
+28236:## Define a container image
+28281:## The TTS model class
+28372:# LoRAs Galore: Create a LoRA Playground with Modal, Gradio, and S3
+28387:## Basic setup
+28477:## Acquiring LoRA weights
+28554:## Inference with LoRAs
+28597:## Try it locally!
+28639:## LoRA Exploradora: A hosted Gradio interface
+28734:# Override Modal resource options (GPU, scaling) at runtime with `Cls.with_options`
+28747:## Setup
+28756:## Defining the class
+28775:## Using `with_options` to override configuration
+28957:# Example (constants.py)
+28968:# Play with the ControlNet demos
+28981:## Imports and config preamble
+29096:## Pick a demo, any demo
+29107:## Setting up the dependencies
+29220:## Serving the Gradio web UI
+29279:## Have fun!
+29289:# Run OpenCV face detection on an image
+29397:# Publish interactive datasets with Datasette
+29414:## Basic setup
+29437:## Persistent dataset storage
+29454:## Getting a dataset
+29523:## Data processing
+29566:## Inserting into SQLite
+29640:## Keep it fresh
+29656:## Web Function
+29775:## Publishing to the web
+29816:# Write to Google Sheets from Postgres
+29824:## Entering credentials
+29946:## Applying Python logic
+30020:## Sending output to a Google Sheet
+30088:# Build your own data warehouse with DuckDB, DBT, and Modal
+30101:## Configure Modal, S3, and DBT
+30203:## Upload seed data
+30253:## Run DBT on the cloud with Modal
+30314:## Serve fresh data documentation with FastAPI and Modal
+30345:# ...
+30346:# Created web function serve_dbt_docs => <output-url>
+30357:## Schedule daily updates
+30387:# Serve DeepSeek V4 Pro on Modal with SGLang
+30409:## Set up the container image
+30570:## Configure infrastructure
+30647:## Test the server
+30693:## Deploy the server
+30749:# Use Modal Dicts and Queues together
+30848:# Fine-tune Flux on your pet using LoRA
+30874:## Imports and setup
+30886:## Building up the environment
+31045:## Low-Rank Adaptation (LoRA) fine-tuning for a text-to-image model
+31207:## Running our model
+31250:## Wrap the trained model in a Gradio web UI
+31385:## Running your fine-tuned model from the command line
+31417:# Serve a Discord Bot on Modal
+31433:## Set up our App and its Image
+31455:## Hit the Free Public APIs API
+31519:## Integrate our Modal Function with Discord Interactions
+31560:## Set up a Discord app
+31592:## Register a Slash Command
+31655:## Host a Discord Interactions endpoint on Modal
+31798:## Deploy on Modal
+31816:## Finish setting up Discord bot
+31828:# Run a job queue that turns documents into structured data with Datalab Marker
+31845:## Define an App
+31870:## Cache the pre-trained model on a Modal Volume
+31904:## Run Datalab Marker on Modal
+31986:## Testing and debugging remote code
+32024:## Deploying the document conversion service
+32047:# Serve a receipt parsing web app
+32062:## Basic setup
+32085:## Define endpoints
+32175:## Running
+32194:## Deploy
+32206:# Dynamic batching for ASCII and character conversion
+32215:## Setup
+32229:## Defining a Batched Function
+32253:## Defining a class with a Batched Method
+32272:## ASCII and character conversion
+32305:# Build a protein folding dashboard with ESM3, Molstar, and Gradio
+32322:## Basic Setup
+32415:## Define a `Model` inference class for ESM3
+32477:## Serve a dashboard as an `asgi_app`
+32638:## Folding from the command line
+32671:## Addenda
+32787:# Fold proteins and biomolecular complexes with ESMFold2
+32817:## Setup
+32833:## Installing ESMFold2 Python dependencies on Modal
+32871:## Caching ESMFold2 model weights on Modal Volumes
+32896:## Running ESMFold2 on Modal
+32986:## Fold a complex from the command line
+33050:# Design protein binders at scale with ESMFold2 and ESMC
+33077:## Setup
+33094:## Defining our Modal Image
+33134:## Caching weights and persisting results on Modal Volumes
+33158:## Designing a binder on Modal
+33225:## Fanning out a sweep with selection
+33274:## From the command line
+33383:# Deploy FastAPI app with Modal
+33429:# Deploy a FastHTML app with Modal
+33465:# Deploy 100,000 multiplayer checkboxes on Modal with FastHTML
+33643:# Run a FastRTC app on Modal
+33657:## Set up FastRTC on Modal
+33738:## Running a FastRTC app on Modal
+33824:## Addenda
+33878:# Fine-tune Whisper to Improve Transcription on Domain-Specific Vocab
+33918:## Setup
+34012:## Training
+34227:## Calling a Modal function from the command line
+34278:## Deploying our fine-tuned model for inference
+34375:## Support code
+34486:# Fine-tune open source YOLO models for object detection
+34504:## Set up the environment
+34553:## Download a dataset
+34604:## Train a model
+34661:## Run inference on single inputs and on streams
+34751:## Running the example
+34841:## Addenda
+34856:# Deploy Flask app with Modal
+34890:# Deploy Flask app with streaming results with Modal
+34944:# Run Flux fast on H100s with `torch.compile`
+34952:## Setting up the image and dependencies
+35040:## Defining a parameterized `Model` inference class
+35105:## Calling our inference function
+35148:## Speeding up Flux with `torch.compile`
+35235:# Make music with ACE-Step 1.5
+35250:## Setting up dependencies
+35336:## Running music generation on Modal
+35480:## Hosting a web UI for the music generator
+35554:# Run a generator function on Modal
+35580:# Run async generator function on Modal
+35604:# Example (get_started.py)
+35625:# Run OpenAI's gpt-oss model with vLLM
+35627:## Background
+35655:## Set up the container image
+35686:## Download the model weights
+35720:## Configuring vLLM to serve GPT-OSS
+35802:## Build a vLLM engine and serve it
+35866:## Deploy the server
+35877:## Test the server
+35977:# Set "fallback" GPUs
+36026:# Snapshot GPU memory to speed up cold starts
+36096:# Train a model to solve coding problems using GRPO and TRL
+36152:## Defining the reward function
+36219:## Kicking off a training run
+36270:## Speeding up training with vLLM
+36330:## Performing inference on the trained model
+36422:# Train a model to solve math problems using GRPO and verl
+36434:## Setup
+36448:## Defining the image and app
+36468:## Defining the dataset
+36502:## Defining a reward function
+36565:## Kicking off a training run
+36667:## Performing inference on the trained model
+36757:# Run cron jobs in the cloud to search Hacker News
+36762:## Import and define the app
+36784:## Defining the function and importing the secret
+36809:## Searching Hacker News
+36854:## Test running
+36858:## Defining the schedule and deploying
+36876:# Hello, world!
+36884:## Importing Modal and setting up
+36898:## Defining a function
+36923:## Running our function locally, remotely, and in parallel
+36962:## What just happened?
+36970:## But why does this matter?
+37008:# Async functions
+37023:## Defining a function
+37041:## Running the app with asyncio
+37065:# Train an SLM from scratch with early-stopping grid search over hyperparameters
+37107:## Basic Setup
+37214:## Running SLM training on Modal
+37323:## Launch a hyperparameter sweep from a `local_entrypoint`
+37511:## Serving SLMs on Modal during and after training
+37776:## Addenda
+37924:# Deploy HTTP servers with ultra low latency on Modal
+37938:## How to define a Modal HTTP Server
+37991:## How to write a client and tests for a Modal HTTP Server
+38037:# Sticky routing for Modal HTTP Servers
+38060:## Define the Modal HTTP Server
+38137:## Test the routing behavior of the Modal HTTP Server
+38193:## Write the client for the Modal HTTP Server
+38259:## Addenda
+38317:# Modal Cookbook: Recipe for Inference Throughput Maximization
+38323:## Conclusions
+38345:## Local env imports
+38360:## Key Parameters
+38395:## Data and Model Specification
+38444:## Define the image
+38493:## Dataset Downloading and Setup
+38496:## Data setup
+38623:## Inference app
+38729:## Local Entrypoint
+38784:# Edit images with Flux Kontext
+38797:## Define a container image
+38836:## Download the model
+38853:## Cache the model weights
+38895:## Set up and run Flux Kontext
+38957:## Running the model from the command line
+38992:# Animate images with Lightricks LTX-Video via CLI, API, and web UI
+39008:## Basic setup
+39061:## Storing model weights on Modal
+39095:## Storing model outputs on Modal
+39107:## Implementing LTX-Video inference on Modal
+39215:## Generating videos from the command line
+39276:## Generating videos via an API
+39291:## Generating videos in a web UI
+39513:# Install scikit-learn in a custom image
+39582:# Example (import_torch.py)
+39618:# Example (inference.py)
+39649:# Example (inference_map.py)
+39692:# Installing the CUDA Toolkit on Modal
+39758:# Install Flash Attention on Modal
+39814:## Overview
+39914:# Run a Jupyter notebook in a Modal Sandbox
+39919:## Setting up the Sandbox
+39948:## Starting a Jupyter server in a Sandbox
+39991:## Communicating with a Jupyter server
+40213:# Deploy LangChain and LangGraph applications with LangServe
+40299:# Training a mathematical reasoning model using the verifiers library with sandboxed code execution
+40310:## Setup
+40351:## Caching HuggingFace, vLLM, and storing model weights. For more on storing model weights on Modal, see
+40380:## Training
+40466:## Inference
+40544:## Usage
+40614:# Low Latency, Serverless LFM2 with vLLM and Modal
+40647:## Set up the container image
+40735:## Define the inference server and infrastructure
+40789:## Speed up cold starts with GPU snapshotting
+40977:## Deploy the server
+40987:## Interact with the server
+41003:## Test the server
+41174:# Run long, resumable training jobs on Modal
+41193:## Resuming from checkpoints in a training loop
+41231:## Modal Volumes are distributed file systems
+41248:## Porting training to Modal
+41325:## Kicking off interruptible training
+41357:## Details of PyTorch Lightning implementation
+41443:# Generate videos from prompts with Lightricks LTX-Video
+41459:## Setup
+41493:## Storing data on Modal Volumes
+41536:## Setting up our LTX class
+41606:## Generate videos from the command line
+41690:## Addenda
+41718:# High-quality text-to-video with LTX-2
+41726:## Setup
+41746:## Environment setup
+41789:## Volumes
+41825:## Inference
+41918:# Deploy a remote, stateless MCP server on Modal with FastMCP
+41929:## Building the MCP server
+42010:## Testing the MCP server
+42068:## Deploying the MCP server
+42082:# Serverless Ministral 3 with vLLM and Modal
+42094:## Set up the container image
+42127:## Download the Ministral weights
+42188:## Serve Ministral 3 with vLLM
+42395:## Deploy the server
+42405:## Interact with the server
+42420:## Test the server
+42564:# Text-to-video generation with Mochi
+42587:## Setting up the environment for Mochi
+42625:## Saving outputs
+42646:## Downloading the model
+42689:## Setting up our Mochi class
+42742:## Running Mochi inference
+42793:## Addenda
+42810:# Add Modal Apps to Tailscale
+43232:# MultiOn: Twitter News Agent
+43236:## Import and define the app
+43249:## Searching for AI News
+43263:## Set up MultiOn
+43300:## Test running
+43304:## Defining the schedule and deploying
+43322:# Low latency Nvidia Nemotron 3 with SGLang and Modal
+43342:## Set up the container image
+43441:## Define the inference server and infrastructure
+43703:## Deploy the server
+43713:## Interact with the server
+43729:## Test the server
+43866:# Run OpenCode in a Modal Sandbox
+43882:## Set up OpenCode on Modal
+43923:## Clone a GitHub repository
+43948:## Grant Modal credentials
+43982:## Start the Sandbox
+44061:## Putting it all together
+44092:## Command-line options
+44181:# Parakeet Multi-talker Speech-to-Text
+44190:## Setup
+44247:## Configuration
+44369:## Transcriber Service
+44571:## Frontend Service
+44623:# Parallel execution on Modal with `spawn` and `gather`
+44674:# Run PlayDiffusion on Modal
+44681:## Setup
+44697:## Define a container image
+44736:## The model class
+44855:# Polling for a delayed result on Modal
+44918:# Retrieval-augmented generation (RAG) for question-answering with LangChain
+44928:## Defining dependencies
+44970:## Scraping the speech
+45009:## Constructing the Q&A chain
+45095:## Mapping onto Modal
+45129:## Test run the CLI
+45145:## Test run the Web Function
+45170:# Publish custom metrics with Prometheus Pushgateway
+45180:## Install Prometheus Pushgateway
+45208:## Start the Pushgateway
+45239:## Push metrics to the Pushgateway
+45319:## Hooking up Prometheus
+45344:# Example (qdrant.py)
+45396:# Example (restricted_volumes.py)
+45619:# Analyze NYC yellow taxi data with DuckDB on Parquet files from S3
+45631:## Basic setup
+45671:## Download New York City's taxi data
+45708:## Analyze data with DuckDB
+45748:## Plot daily taxi rides
+45786:## Run everything
+45834:# Run arbitrary code in a sandboxed environment
+45839:## Setting up a multi-language environment
+45866:## Running bash, Python, Node.js, Ruby, and PHP in a Sandbox
+45967:# Run Claude Code in a Modal Sandbox
+46070:# Maintain a pool of warm Sandboxes that are healthy and ready to serve requests
+46115:## Configuration of the pool
+46144:## Main implementation
+46352:## Local commands for interacting with the pool
+46481:# Scheduling remote jobs
+46524:# Run Facebook's Segment Anything Model 2 (SAM 2) on Modal
+46542:## Set up dependencies for SAM 2
+46580:## Wrapping the SAM 2 model in a Modal class
+46699:## Segmenting videos from the command line
+46740:## Helper functions for SAM 2 inference
+46813:# Run and share Streamlit apps
+46835:## Define container dependencies
+46862:## Spawning the Streamlit server
+46878:## Iterate and Deploy
+46898:# Fast-booting, low-latency Qwen 3 8B with SGLang, GPU snapshots, and speculative decoding
+46907:## Set up the container image
+46937:## Choose a GPU
+46992:## Configure SGLang for minimal latency
+47002:## Speed up cold starts with GPU snapshotting
+47037:## Define the inference server and infrastructure
+47151:## Deploy the server
+47157:## Test the server
+47280:# Low latency Qwen 3.6 with SGLang and Modal
+47294:## Set up the container image
+47450:## Configure SGLang for minimal latency
+47549:## Define the inference server and infrastructure
+47749:## Deploy the server
+47759:## Interact with the server
+47775:## Test the server
+47912:# Serverless Qwen 3-8B with SGLang and Modal Snapshots
+47930:## Set up the container image
+48085:## Speed up cold starts with GPU snapshotting
+48155:## Define the inference server and infrastructure
+48301:## Deploy the server
+48311:## Interact with the server
+48322:## Test the server
+48443:# Serve the Qwen 3.6 Vision-Language Model with SGLang
+48453:## Setup and container image definition
+48483:## Configure the model
+48498:## Configure GPU
+48509:## Cacheing in Modal Volumes
+48565:## Define the inference server
+48725:## Test the server
+48829:## Deploy the server
+48840:# Build a stateful, sandboxed code interpreter
+48849:## Setting up a code interpreter in a Modal Sandbox
+48925:## Running code in a Modal Sandbox
+48980:# Simple PyTorch cluster
+48986:## Basic setup: Imports, dependencies, and a script
+49030:## Configuring a test cluster
+49070:## Launching the script
+49664:# Streaming Speaker Diarization with Sortformer2.1
+49671:## Setup
+49722:## Run Sortformer2.1 speaker diarization
+49735:## Using WebSockets to stream audio and diarization results
+49861:## Serving the diarization results to a frontend
+49916:# Run StepFun models with SGLang
+49921:## Set up the container image
+50019:## Define the inference server
+50082:## Deploy the server
+50090:## Test the server
+50188:# Deploy a FastAPI app with streaming responses
+50286:# Stream transcriptions with Kyutai STT
+50294:## Setup
+50343:## Run Kyutai STT inference on Modal
+50608:## Run a local Python client to test streaming STT
+50687:## Deploy a streaming STT service on the Web
+50817:# Streaming audio transcription using Parakeet
+50856:## Setup
+50870:## Volume for caching model weights
+50882:## Configuring dependencies
+50927:## Implementing streaming audio transcription on Modal
+51110:## Running transcription from a local Python client
+51167:## Addenda
+51467:# TensorFlow tutorial
+51476:## Setting up the dependencies
+51500:## Logging data to TensorBoard
+51519:## Training function
+51617:## Running TensorBoard
+51680:## Local entrypoint code
+51708:# Run TextEmbeddingsInference (TEI) on Modal
+51870:# Run Stable Diffusion 3.5 Large Turbo as a CLI, API, and web UI
+51884:## Basic setup
+51907:## Configuring dependencies
+51945:## Implementing SD3.5 Large Turbo inference on Modal
+52014:## Generating Stable Diffusion images from the command line
+52075:## Generating Stable Diffusion images via an API
+52090:## Generating Stable Diffusion images in a web UI
+52150:# Generate 3D worlds from text with LTX-2.3 and InSpatio-World
+52167:## Setup
+52193:## Paths and Volumes
+52243:## Tracking progress through the Volume
+52344:## Stage 1: LTX-2.3 reference video
+52489:## Stage 2: InSpatio world generation
+52652:## Web UI
+52754:## Command line
+52804:# High-throughput LLM inference with Tokasaurus (LLama 3.2 1B Instruct)
+52823:## Set up the container image
+52873:## Download the model weights
+52901:## Configure Tokasaurus for maximum throughput on this workload
+52957:## Serve Tokasaurus with an OpenAI-compatible API
+53021:## Run the Large Language Monkeys GSM8K benchmark
+53114:## Addenda
+53185:# Tracing and profiling GPU-accelerated PyTorch programs on Modal
+53201:## Saving traces to a Modal Volume
+53227:## Setting up a Modal App with a GPU-accelerated PyTorch Function
+53295:## Wrapping a Modal Function with a profiler
+53373:## Triggering profiled execution from the command line and viewing in Perfetto
+53446:## Serving TensorBoard on Modal to view PyTorch profiles and traces
+53520:# Training script for training a reasoning model using the verifiers library with sandboxed code execution
+53643:# Serve an interactive language model app with latency-optimized TensorRT-LLM (LLaMA 3 8B)
+53670:## Overview
+53699:## Installing TensorRT-LLM
+53752:## Downloading the model
+53791:## Setting up the engine
+53960:## Serving inference under the Doherty Threshold
+54093:## Calling our inference function
+54224:# Serverless TensorRT-LLM (LLaMA 3 8B)
+54233:## Overview
+54259:## Installing TensorRT-LLM
+54312:## Downloading the Model
+54362:## Quantization
+54425:## Compiling the engine
+54495:## Serving inference at tens of thousands of tokens per second
+54642:## Calling our inference function
+54883:## Footer
+54918:# Efficient LLM Finetuning with Unsloth
+54938:## Modal Infrastructure Setup
+55035:## Data Processing
+55107:## Loading the pretrained model
+55129:## Training Configuration
+55200:## Main Training Function
+55395:## Utility Functions
+55504:# Serve very large language models (DeepSeek V3, Kimi-K2, GLM 4.7/5)
+55538:## Set up the container image
+55795:## Configure infrastructure
+55936:## Test the server
+56003:## Deploy the server
+56013:## Addenda
+56069:# Run OpenAI-compatible LLM inference with Gemma and vLLM
+56087:## Set up the container image
+56114:## Download the model weights
+56157:## Configuring vLLM
+56201:## Build a vLLM engine and serve it
+56282:## Deploy the server
+56292:## Interact with the server
+56312:# pip install openai==1.76.0
+56316:## Testing the server
+56413:# Low latency Qwen 3 8B with vLLM and Modal
+56430:## Set up the container image
+56515:## Define the inference server and infrastructure
+56733:## Deploy the server
+56743:## Interact with the server
+56759:## Test the server
+56902:# Run LLM inference at maximum throughput
+56938:## Organizing a batch job on Modal
+57102:## Serving tokens at maximum throughput
+57275:## Transforming SEC filings for batch processing
+57379:## Loading filings from the SEC EDGAR Feed
+57439:## Addenda
+57573:# Create a web wrapper for job queue, submission, polling, & results
+57728:# Real-time object detection with WebRTC and YOLO
+57743:## What is WebRTC?
+57774:## How do I run a WebRTC app on Modal?
+57815:## Using `modal_webrtc` to detect objects in webcam footage
+58029:## Addenda
+58146:## Testing WebRTC and Modal
+58323:# A simple web scraper
+58328:## Set up your first Modal app
+58335:## Scrape links locally
+58367:## Run it on Modal
+58413:## Add dependencies
+58485:## Scale out
+58507:## Deploy it and run it on a schedule
+58537:## Add Secrets and integrate with other systems
+58630:## Summary
+58640:# Web Scraping on Modal
+58721:# WhisperX transcription with word-level timestamps
+58733:## Defining image
+58769:## Defining the app
+58779:## Defining the inference service
+58851:## Command-line usage
