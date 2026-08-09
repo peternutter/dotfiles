@@ -1,13 +1,25 @@
 ---
 name: writing
-description: Rewrite text so it sounds human without losing its substance. Use when editing, humanizing, or de-AI-ing any draft — articles, summaries, blog posts, research notes, emails. Preserves specifics, opinions, and structure; strips AI scaffolding; injects voice where the text has gone flat. Drafting guidance is included but secondary.
+description: Rewrite or draft text so it sounds human without losing its substance. Use when editing, humanizing, or de-AI-ing any draft — articles, summaries, blog posts, research notes, emails — or when asked whether text reads as AI-written (detect mode). Preserves specifics, opinions, and structure; strips AI scaffolding; matches the author's own voice from a sample when one is available.
 ---
 
 # Writing & Rewriting
 
-The goal is not "remove AI patterns." The goal is: **preserve the human signal, strip the AI noise, add voice where it's missing.**
+The goal is not "remove AI patterns." The goal is: **preserve the human signal, strip the AI noise, and rewrite toward a real voice.**
 
-AI-ness is not only excess. It's also absence — no opinion, no rhythm, no specifics. A rewrite that only subtracts produces sterile, voiceless prose that's still obviously machine-edited. You have to do both: cut the scaffolding, then put a person back in.
+AI-ness is not only excess. It's also absence — no opinion, no rhythm, no specifics. A rewrite that only subtracts produces sterile, voiceless prose that's still obviously machine-edited. Scrubbing banned words gives the model nothing to aim at; a voice target does. So the order of leverage is: (1) match a sample of the author's real writing, (2) cut the scaffolding, (3) put a person back in.
+
+---
+
+## Step 0 — Get a voice target
+
+Before rewriting, look for a sample of the author's own human-written prose. The user may paste one, point at a file, or — for Peter — it already exists nearby: his notes, reports, messages, and drafts in the repo. A ~300-word sample is enough. If nothing is available, proceed with the default catalog behavior; do not block on asking.
+
+With a sample in hand:
+
+1. Read it first. Note sentence-length spread, vocabulary register, how paragraphs open, punctuation habits, contraction rate, recurring connectives, how it handles emphasis.
+2. Rewrite **toward those habits**, not toward generic "clean" prose. Don't upgrade casual words, don't regularize deliberate quirks, don't smooth the jagged bits.
+3. **The sample outranks every rule in this skill.** If the sample uses em dashes, semicolons, or long sentences, keep them at roughly the sample's frequency. Matching the author beats scrubbing the tell.
 
 ---
 
@@ -48,7 +60,19 @@ The text after Pass 2 should be **at least as long** as the original in most pla
 
 ### Pass 3 — Self-audit
 
-Ask yourself: *what still makes this sound AI-generated?* Answer in one or two specific bullets, then revise once more. This catches the tells Pass 1 normalized.
+Ask yourself two questions: *what still makes this sound AI-generated?* and *does the rewrite state any fact, name, number, or citation that isn't in the source?* Answer in one or two specific bullets, then revise once more. This catches the tells Pass 1 normalized — and a fabrication is a defect even when it sounds more human than the vague original.
+
+---
+
+## Modes
+
+**Pasted text (default).** Deliver the rewrite plus the short preservation note (see Output format).
+
+**File mode.** The user points at a file: rewrite it in place so it contains only the final text. Touch prose only — leave code blocks, frontmatter, data, math, and link targets alone. Report a short summary of what changed instead of pasting the rewrite back.
+
+**Embedded mode.** This skill is one step of a larger job (a PR description, an email, a doc section). Run the passes internally and output only the final text — no audit bullets, no ceremony.
+
+**Detect mode.** The user asks *whether* text reads as AI-written ("does this sound like AI?", "what gives it away?") rather than for a fix. Quote each offending phrase and name the pattern it matches — every flag needs a quote, not a gesture at "the tone." Give no overall AI-probability score; a pattern list is evidence the user can check, a percentage is just a guess wearing a number. Don't rewrite unless asked.
 
 ---
 
@@ -93,6 +117,15 @@ Replace with one named source. If you don't have one, cut the claim. **Do not in
 ### Negative parallelisms — `[rewrite]`
 "It's not just X, it's Y." "Not only X but also Y." Once is fine. Twice in a piece = chatbot. State the point directly.
 
+### Staccato contrast — `[rewrite]`
+"SimpleX. Not Telegram. Not WhatsApp. It's different." The fragment-chain contrast pattern. Occasionally effective in human writing; at AI frequency it's a high-confidence tell. Fold into one comparative sentence.
+
+### Parataxis — `[rewrite]`
+Short sentence. Then another. Then another. Chained blunt declaratives with no connective tissue read as AI even when every word is clean. Connect related thoughts with conjunctions, subordinate clauses, or semicolons so the syntax shows *how* the ideas relate — causation, contrast, qualification. (A deliberate fragment for punch is fine; three in a row is a pattern.)
+
+### Synonym cycling — `[rewrite]`
+Rotating "the study / the research / the investigation / the analysis" to avoid repeating a word. Humans repeat the natural name; elegant variation at density is a machine habit. Pick the plain term and reuse it.
+
 ### Rule of three — `[rewrite]`
 Triads ("innovation, inspiration, and industry insights") to sound rhetorical. Use the natural number — two, four, one. Two is underrated.
 
@@ -103,7 +136,7 @@ AI replaces "is/are/has" with "serves as," "stands as," "represents," "boasts," 
 > After: The gallery is the exhibition space. It has four rooms totaling 3,000 sq ft.
 
 ### Em dash overuse — `[rewrite]`
-The single most-cited AI tell. Replace most em dashes with commas, periods, parentheses, or colons. Target: at most one or two per piece. Exception: if the author *chose* the em dash for voice, keep it.
+The single most-cited AI tell. Replace most em dashes with commas, periods, parentheses, or colons. Target: at most one or two per piece. Exception: if the author *chose* the em dash for voice (or their sample uses them), keep it. **House rule (Peter): anything sendable or public-facing gets ZERO em dashes — use parentheses.**
 
 ### Sycophantic / chatbot artifacts — `[delete]`
 "Great question!", "You're absolutely right!", "I hope this helps!", "Let me know if...", "Certainly!", "Of course!". Conversation remnants pasted into content. Always cut.
@@ -141,12 +174,13 @@ Rules that override the catalog when they conflict with preservation:
 - **Don't homogenize voice.** If the author writes long Faulknerian sentences, don't chop them into short punchy ones. Match their rhythm; remove only the rhythm that's *AI's*, not the author's.
 - **Don't invent.** No fabricated sources, quotes, statistics, or anecdotes — even if the rewrite "needs" them. Honest vagueness beats fake specificity.
 - **Don't add disclaimers.** "It's worth noting that" → just say it.
+- **Don't scrub legitimate register.** In academic/technical prose, standard moves are not AI tells: "in contrast," "consistent with," "we find that," "prior work," "however" at normal density, hedges that mark genuine uncertainty ("suggests," "we suspect"). Flag these only when they cluster or when nothing concrete follows them. Over-scrubbing produces denatured text that's its own tell.
 
 ---
 
 ## Drafting (when generating, not rewriting)
 
-If you're drafting from scratch rather than rewriting, the same principles apply, plus:
+Applying these rules while drafting beats scrubbing afterwards — a rewrite pass can only sand down what generation already shaped. If a voice sample exists (Step 0), draft in that voice from the first sentence. The same principles apply, plus:
 
 - **Hook with a specific detail or surprising observation, not a thesis statement.**
 - **Lead paragraphs with action verbs or concrete nouns, not "This/The/It."**
