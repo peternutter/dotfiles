@@ -232,6 +232,27 @@ for skill_dir in "$DOTFILES/claude/skills"/*; do
     [ -d "$skill_dir" ] || continue
     link_file "$skill_dir" "$HOME/.codex/skills/$(basename "$skill_dir")"
 done
+# Default model / effort / speed tier (top-level keys in ~/.codex/config.toml)
+CODEX_DEFAULTS='model = "gpt-6.1-sol"
+model_reasoning_effort = "xhigh"
+service_tier = "priority"'
+touch "$HOME/.codex/config.toml"
+python3 - "$HOME/.codex/config.toml" "$CODEX_DEFAULTS" <<'PY'
+import re, sys
+path, defaults = sys.argv[1], sys.argv[2].splitlines()
+keys = {d.split("=", 1)[0].strip() for d in defaults}
+lines = open(path, encoding="utf-8").read().splitlines(keepends=True)
+# Drop existing top-level occurrences (before the first [table]) of the managed keys.
+out, in_top = [], True
+for line in lines:
+    if re.match(r"^\s*\[", line):
+        in_top = False
+    if in_top and line.split("=", 1)[0].strip() in keys and "=" in line:
+        continue
+    out.append(line)
+open(path, "w", encoding="utf-8").write("".join(d + "\n" for d in defaults) + "".join(out))
+PY
+echo "  Set Codex defaults: gpt-6.1-sol, xhigh, priority (fast)"
 # Merge MCP servers into ~/.claude.json (Claude Code reads user MCPs from there)
 if command -v jq &>/dev/null; then
     if ! command -v python3 >/dev/null 2>&1; then
