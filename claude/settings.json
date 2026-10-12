@@ -1,4 +1,5 @@
 {
+  "cleanupPeriodDays": 99999,
   "env": {
     "EDITOR": "vim",
     "CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION": "2000"
@@ -26,7 +27,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-opus-5-5",
+  "model": "opus[1m]",
   "hooks": {
     "PostToolUse": [
       {
@@ -53,14 +54,16 @@
     "context7@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
     "codex@codex-plugin-cc": true,
-    "hive@alignment-hive": true
+    "hive@alignment-hive": true,
+    "tldr@alignment-hive": true
   },
   "extraKnownMarketplaces": {
     "codex-plugin-cc": {
       "source": {
         "source": "github",
         "repo": "Crazytieguy/codex-plugin-cc"
-      }
+      },
+      "autoUpdate": true
     },
     "alignment-hive": {
       "source": {
@@ -72,6 +75,11 @@
   },
   "outputStyle": "custom",
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  },
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
@@ -80,6 +88,10 @@
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(latexmk:*) in /workspace/mats_project — routine LaTeX build tool, 8× usage"
+    ],
     "environment": [
       "### Org-wide",
       "**Organization**: None configured",
@@ -111,10 +123,6 @@
       "**Org-specific CLIs**: latexmk (8× — LaTeX build, used with Overleaf git remote), modal (1× — Modal volume/workspace CLI); runpodctl and the RunPod REST API are also routine per skill docs but not yet reflected in transcript counts",
       "routine under /workspace/mats_project/ prefix: GPU job launches via gpu-run skill, note-taking via note/new-paper skills, agentbus messaging, and public-viz serving are all routine within this repo's own tree and its RunPod/Modal infra as documented in .claude/skills/",
       "**Org-specific CLIs**: latexmk (8× — LaTeX build, used with Overleaf git remote); runpodctl and the RunPod REST API, and modal, are documented as routine in .claude/skills/ but have minimal/no transcript corroboration yet"
-    ],
-    "allow": [
-      "$defaults",
-      "Bash(latexmk:*) in /workspace/mats_project — routine LaTeX build tool, 8× usage"
     ]
   },
   "vim": true
