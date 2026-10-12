@@ -26,6 +26,7 @@
     ],
     "defaultMode": "auto"
   },
+  "model": "claude-fable-5-1[1m]",
   "hooks": {
     "PostToolUse": [
       {
@@ -74,8 +75,47 @@
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
+  "theme": "dark",
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
+  "autoMode": {
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Primary use of Claude Code**: software development (MATS research project — SDF/SFT experiments, evals, notes/library management)",
+      "**Cloud provider(s)**: RunPod (GPU/CPU pods, network volume `fxanote7q4` in US-CA-2) and Modal (shared workspace volume `agentbus`)",
+      "**Repository visibility**: assume private (not queryable via gh in this session; github.com:peternutter/mats_project.git shows no public-visibility signal)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: project `.env` file (gitignored) holding RUNPOD_API_KEY, WANDB_API_KEY, and similar; `authorized_keys` and an unusual-name secret file are also gitignored",
+      "**Default / protected branches**: main (default branch); protection/ruleset status not queryable here — treat main as protected by default caution",
+      "**CI/CD deploy targets**: None configured",
+      "**Network posture**: None configured",
+      "**Host containment**: None configured — Claude Code appears to run from an always-on CPU RunPod pod with outbound access to RunPod REST API, Modal volumes, Weights & Biases, and Overleaf; GPU pods are launched/torn down via RunPod REST API using the project's own API key (the pod-injected RUNPOD_API_KEY is read-only) — treat RunPod/Modal/W&B credentials as task credentials only to the extent the project's own `.env` supplies them, not any pod/node metadata identity",
+      "**Source control**: github.com:peternutter/mats_project.git (origin) only — the trusted repo and its remote",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: git.overleaf.com (Overleaf, contacted 1× in recent transcripts) for LaTeX collaboration; RunPod proxy URLs (`https://<POD_ID>-<PORT>.proxy.runpod.net`) for driving GPU pod servers/viz within this project",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: `notes/experimental-progress/qwq32b-capability-retention-graft-vs-native.md` (flagged by filename scan as sensitive-looking — treat as internal research data, audience = project collaborators Dani/Peter only); any credentials in `.env`, `authorized_keys`, or similarly gitignored files",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "**Repository visibility**: not queryable here — assume private; treat as possibly public is not indicated but caution applies to confidential material until confirmed",
+      "**Default / protected branches**: main (default branch, confirmed); protection/ruleset status not queryable here — treat main as protected by default caution",
+      "**Host containment**: None configured — Claude Code appears to run from an always-on CPU RunPod pod with outbound access to the RunPod REST API, Modal volumes, Weights & Biases, and git.overleaf.com; GPU pods are launched/torn down via the RunPod REST API using the project's own `.env` API key (the pod-injected RUNPOD_API_KEY is read-only) — treat RunPod/Modal/W&B credentials as task credentials only to the extent the project's own `.env` supplies them, never any pod/node metadata identity",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development — MATS research (experiment code, evals, dashboards, and research notes) under /workspace/mats_project, working as the 'Peter' side of a two-researcher setup (agentbus messaging with Dani's Claude instance)",
+      "**Trusted repo**: /workspace/mats_project (github.com:peternutter/mats_project.git, origin) — this repo and its remote only; assume private unless shown otherwise",
+      "**Org-specific CLIs**: latexmk (8× — LaTeX build, used with Overleaf git remote), modal (1× — Modal volume/workspace CLI); runpodctl and the RunPod REST API are also routine per skill docs but not yet reflected in transcript counts",
+      "routine under /workspace/mats_project/ prefix: GPU job launches via gpu-run skill, note-taking via note/new-paper skills, agentbus messaging, and public-viz serving are all routine within this repo's own tree and its RunPod/Modal infra as documented in .claude/skills/",
+      "**Org-specific CLIs**: latexmk (8× — LaTeX build, used with Overleaf git remote); runpodctl and the RunPod REST API, and modal, are documented as routine in .claude/skills/ but have minimal/no transcript corroboration yet"
+    ],
+    "allow": [
+      "$defaults",
+      "Bash(latexmk:*) in /workspace/mats_project — routine LaTeX build tool, 8× usage"
+    ]
+  },
   "vim": true
 }

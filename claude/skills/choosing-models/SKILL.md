@@ -37,9 +37,14 @@ the weekly limit).
 
 ## Model notes
 
-- **gpt-5.6-sol** — GPT workhorse, best intelligence/cost. medium effort is the default
-  (matches our pinned codex config); high for long self-verifying tasks; above high it
-  overthinks and overengineers.
+- **gpt-6.1-sol** — the pinned Codex default since 2026-10-12 (`~/.codex/config.toml`, managed by
+  `install.sh`: `model = "gpt-6.1-sol"`, `model_reasoning_effort = "xhigh"`, `service_tier = "priority"`).
+  Leave `--model`/`--effort` unset so the config applies; verify a run's model by grepping its rollout
+  jsonl under `~/.codex/sessions/`.
+- **gpt-6-astra** — the previous default (2026-09-05 to 2026-10-12, high effort); still available via
+  `--model gpt-6-astra`.
+- **gpt-5.6-sol** — the older workhorse, `--model gpt-5.6-sol`. medium effort was its sweet spot; high
+  for long self-verifying tasks; above high it overthinks and overengineers.
 - **gpt-5.6-terra** — skip; sol at low/medium wins on benchmarks and in a blind bake-off.
 - **gpt-5.6-luna** — high-volume mechanical work (doc piles, extraction); cheaper than
   Haiku and more capable. (Not currently wired here — would need a codex model override.)

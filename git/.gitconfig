@@ -26,7 +26,7 @@
 	conflictstyle = diff3
 
 [pull]
-	rebase = true
+	rebase = false
 
 [push]
 	autoSetupRemote = true
@@ -56,3 +56,5 @@
 	directory = *
 [url "git@github.com:"]
 	insteadOf = https://github.com/
+[credential]
+	helper = store
