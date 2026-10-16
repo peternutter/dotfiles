@@ -56,3 +56,6 @@ fi
 
 [ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 export PATH="$HOME/.local/bin:$PATH"
+
+# OpenClaw Completion
+[ -f "/home/node/.openclaw/completions/openclaw.zsh" ] && source "/home/node/.openclaw/completions/openclaw.zsh"
