@@ -15,5 +15,8 @@
 - **Auto-expanding bash in skills/agents/commands fails hard:** if a `` !`command` `` inside a SKILL.md / agent .md returns non-zero, the ENTIRE file silently fails to load. Always write `` !`command 2>/dev/null || echo "fallback"` ``.
 - **Hooks must fail loudly, not silently:** don't end hook commands with a bare `|| true`. Wrap in an ERR trap that logs to `~/.cache/<name>/error.log` and emits a `{"systemMessage": "..."}` telling the user the hook broke. Use `"async": true` for slow SessionStart bootstrap steps so they don't block startup.
 
+# Other machines
+- If `~/fleet/COMPUTERS.md` exists (or `/workspace/fleet/COMPUTERS.md`), it lists my other machines, how to reach them, and what may run where. Read it before running anything on another machine.
+
 # Private rules (lives on the pod volume, not in this public repo; skipped where absent)
 @~/.claude/GENERAL-RULES.md
