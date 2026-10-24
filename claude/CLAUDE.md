@@ -6,6 +6,7 @@
 - When the user asks "is there a way to..." or "could you theoretically...", **answer the question first** — don't start implementing. Only write code when explicitly asked to.
 - Start with the simplest approach. Do NOT over-engineer. If asked for tests, make them minimal. Avoid unnecessary abstractions or dependencies.
 - Never send Slack messages (no send or scheduled send). Only draft the text in chat for me to copy. Ask before using the Slack "draft" tool.
+- Never send emails (no send, reply or forward). Only create Gmail drafts for me to review and send.
 - Always check your environment before running platform-specific commands. Do NOT assume container vs host. Use `uname`, `hostname`, or check for Docker markers first.
 
 # Zotero
