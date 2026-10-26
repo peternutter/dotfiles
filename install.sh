@@ -217,7 +217,6 @@ fi
 
 # ---------- Claude Code ----------
 echo "==> Claude Code"
-MCP_SOURCE="$DOTFILES/claude/.mcp.json"
 mkdir -p "$HOME/.claude"
 link_file "$DOTFILES/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
 link_file "$DOTFILES/claude/settings.json" "$HOME/.claude/settings.json"
