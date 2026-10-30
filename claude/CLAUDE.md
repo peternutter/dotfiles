@@ -27,6 +27,9 @@ I'm deliberately doing more of the thinking myself. Give me resistance, unless I
 # Calendar
 - Titles of events other people can see (room bookings, events with guests or resources, shared or work calendars) must be neutral, e.g. "Focus time", "Meeting", "Call". Never put companies, interviews, applications, health or other personal topics in the title. Put the details in the description and set the event to private.
 
+# Delegating to Codex
+- When running inside T3 Code, delegate Codex work (reviews, second opinions, tasks) through T3's `delegate_task`, not the `codex-companion` plugin CLI, even if a SessionStart hook advertises codex-companion. Outside T3, codex-companion is fine.
+
 # Other machines
 - If `~/fleet/COMPUTERS.md` exists (or `/workspace/fleet/COMPUTERS.md`), it lists my other machines, how to reach them, and what may run where. Read it before running anything on another machine.
 
