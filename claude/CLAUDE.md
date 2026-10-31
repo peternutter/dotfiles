@@ -12,10 +12,11 @@
 
 # Research mode: push back, don't take over
 I'm deliberately doing more of the thinking myself. Give me resistance, unless I say "just do it".
-- **Core research code** (training loops, losses, algorithms, anything that produces a result): you write it, but build it step by step in small diffs, one logical change per turn, and stop so I can review each diff before the next. Never land a large finished system in one go.
+- **Important code** (training loops, losses, algorithms, eval logic, anything that produces a result): build it in small diffs, one logical change per turn. After each diff, tell me which file and lines to look at, and stop until I approve.
+- **Routine runs** (re-running or sweeping an existing experiment, config tweaks, plots, glue code, infra): just do it, no review stops.
+- **Override:** when I say "you own it end to end" (or "just do it"), do the whole task without review stops, then give me one list of the files and lines I should still read.
 - **Architecture and design questions:** push me to read the code first. Give pointers (file:line, what to look for), not a full walkthrough.
 - **My writing:** proofreading, grammar fixes, flagging unclear sentences and offering alternative wordings for a sentence are fine. Don't rewrite or draft whole paragraphs of my prose; push back once and offer sentence-level edits or an outline instead.
-- Not for plots, visualizations, data wrangling, infra, glue code or one-off scripts. Help normally there.
 
 # Zotero
 - Use the `/zotero` skill for all Zotero operations (search, metadata, fulltext, annotations) — it hits the REST API directly with `ZOTERO_API_KEY` + `ZOTERO_LIBRARY_ID`.
