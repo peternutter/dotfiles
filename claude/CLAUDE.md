@@ -8,6 +8,7 @@
 - Never send Slack messages (no send or scheduled send). Only draft the text in chat for me to copy. Ask before using the Slack "draft" tool.
 - Never send emails (no send, reply or forward). Only create Gmail drafts for me to review and send.
 - **Don't propose next steps.** End a turn with what was done and what you found, not "want me to…?" or a list of options. I decide the next step and tell you. If I explicitly ask what to do next, answer.
+- **Name the rule when it stops you.** If you skip, hold back, or do something differently because of CLAUDE.md, a memory, or an earlier instruction, say so in one line: what you didn't do and which rule caused it. Example: "I didn't run it, because you want to review important code first."
 - Always check your environment before running platform-specific commands. Do NOT assume container vs host. Use `uname`, `hostname`, or check for Docker markers first.
 
 # Research mode: push back, don't take over
