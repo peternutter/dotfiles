@@ -40,8 +40,20 @@ I'm deliberately doing more of the thinking myself. Give me resistance, unless I
 # Delegating to Codex
 - When running inside T3 Code, delegate Codex work (reviews, second opinions, tasks) through T3's `delegate_task`, not the `codex-companion` plugin CLI, even if a SessionStart hook advertises codex-companion. Outside T3, codex-companion is fine.
 
+# Email, calendar, and Slack access
+- If Codex lacks direct email, calendar, or Slack tools, use a Claude subagent with the user's existing claude.ai connectors. In T3 Code, use `delegate_task` with the Claude provider. Do not declare these services unavailable without trying this route.
+- Claude may need `ToolSearch` to load connector tools. Verify the available permissions for the requested action; existing rules against sending email or Slack messages still apply.
+
 # Other machines
 - If `~/fleet/COMPUTERS.md` exists (or `/workspace/fleet/COMPUTERS.md`), it lists my other machines, how to reach them, and what may run where. Read it before running anything on another machine.
+- At the start of a session, identify the actual execution environment with `uname`, `hostname`, `pwd`, and container markers. Do not infer the machine from the launch directory or assume the shell is on the T3 host. Use the fleet registry to map it to a machine; re-check after connecting elsewhere.
+- `claude-box` is the agent/T3 container hosted on TrueNAS, not the TrueNAS host OS. Run agents and T3 inside their containers; use the TrueNAS host only for host administration when needed. RunPod has its own separate T3 server.
+- **Browser defaults:** In T3 sessions on `claude-box` and the MacBook, use T3's built-in browser by default. On RunPod, use Fleet Browser by default while its built-in T3 browser cannot run with Chrome's sandbox enabled. An explicit request for Fleet Browser overrides the default on any machine. On claude-box/MacBook, report a T3 browser failure rather than silently switching to Fleet; outside T3, do not assume the T3 browser tools exist.
+- The MacBook default is standing authorization to use T3's agent-controlled browser for requested browser tasks. Leave the user's personal browser and other tabs alone; this does not authorize unrelated computer use or background browser automation on the MacBook.
+- When I say **Fleet Browser**, I mean the shared persistent Chromium in the dedicated browser container hosted on TrueNAS, not T3's built-in browser or the MacBook's local browser. Read the `browser` entry in the fleet registry before declaring access unavailable. Find the registry independently of the current directory: `~/fleet/COMPUTERS.md`, then `/workspace/fleet/COMPUTERS.md`.
+- Use the `fleet-browser` MCP when available. Otherwise use the documented fallback: `uv run -q --with playwright python ~/fleet/scripts/browser-tab.py TAG 'async Python using page'` (substitute `/workspace/fleet` if needed). `scripts/browser-cdp.sh` resolves/wakes the browser and handles the RunPod tunnel. Reuse the persistent browser profile, keep your own tab, and leave other tabs alone. Websites can overwrite `window.name`; if a tagged tab disappears, inspect existing tab URLs before creating more tabs.
+- **T3's built-in browser is separate from Fleet Browser.** Use the T3 browser tools attached to the current T3 session. Its server may be on claude-box or RunPod; Fleet access working does not establish that T3's built-in browser works. Check each independently and report the actual error. Do not change browser sandbox or host/container security settings merely to discover availability.
+- Keep these instructions in the global Claude/Codex instruction files so they apply from any working directory; do not rely on a project-local file or this conversation.
 
 # Private rules (lives on the pod volume, not in this public repo; skipped where absent)
 @~/.claude/GENERAL-RULES.md

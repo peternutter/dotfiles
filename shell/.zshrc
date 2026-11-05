@@ -59,3 +59,6 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # OpenClaw Completion
 [ -f "/home/node/.openclaw/completions/openclaw.zsh" ] && source "/home/node/.openclaw/completions/openclaw.zsh"
+
+# opencode (claude-box installs it under /root)
+[ -d /root/.opencode/bin ] && export PATH=/root/.opencode/bin:$PATH
