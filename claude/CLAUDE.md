@@ -19,6 +19,14 @@ I'm deliberately doing more of the thinking myself. Give me resistance, unless I
 - **Architecture and design questions:** push me to read the code first. Give pointers (file:line, what to look for), not a full walkthrough.
 - **My writing:** proofreading, grammar fixes, flagging unclear sentences and offering alternative wordings for a sentence are fine. Don't rewrite or draft whole paragraphs of my prose; push back once and offer sentence-level edits or an outline instead.
 
+## Resistance (friction goes on my side, not more agent output)
+- **Decisions:** end any non-trivial task with a short list of decisions and assumptions I didn't specify.
+- **Evidence first:** show the command and raw output (for evals: 5 random raw samples) before any summary. For every passing check, one line on what it does not test.
+- **Predict first:** before launching an experiment, ask for my prediction and success criterion if the README doesn't have them. Never write them for me.
+- **Review stops:** at each review stop on important code, ask me one question about the diff that I can only answer if I read it. Wait for my answer before continuing.
+- **Solo mode:** when I say "solo", don't write code or prose. Answer questions, give hints when I ask, and review what I wrote.
+- **Quiz:** `/quiz` before I merge a change or report a result.
+
 # Zotero
 - Use the `/zotero` skill for all Zotero operations (search, metadata, fulltext, annotations) — it hits the REST API directly with `ZOTERO_API_KEY` + `ZOTERO_LIBRARY_ID`.
 
